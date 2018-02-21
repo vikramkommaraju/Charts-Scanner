@@ -37,6 +37,7 @@
     </repository>
 	 </repositories>
  
+ 
 	<dependencies>
 		<!-- Spring Boot Starters -->
 		<dependency>
@@ -161,6 +162,15 @@
             <plugin>
 		      <artifactId>maven-assembly-plugin</artifactId>
 		      <configuration>
+		      <fileSets>
+			        <fileSet>
+			            <directory>${project.build.directory}</directory>
+			            <outputDirectory>/</outputDirectory>
+			            <includes>
+			                <include>**/*</include>
+			            </includes>
+			        </fileSet>
+			</fileSets>
 		        <archive>
 		          <manifest>
 		            <mainClass>charts.scanner.app.SpringBootWebApplication</mainClass>
@@ -171,6 +181,7 @@
 		        </descriptorRefs>
 		      </configuration>
 		    </plugin>
+		    
 		</plugins>
 	</build>
 	
