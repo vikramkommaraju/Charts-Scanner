@@ -107,7 +107,7 @@ public class WebScraperService {
 		capabilities.setCapability("takesScreenshot", false);
 		capabilities.setCapability(
 			    PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-			    "../phantomjs"
+			    "../src/main/resources/phantomjs"
 			);
 		return capabilities;
 	}
