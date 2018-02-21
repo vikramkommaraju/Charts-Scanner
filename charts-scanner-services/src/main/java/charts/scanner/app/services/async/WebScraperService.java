@@ -103,11 +103,6 @@ public class WebScraperService {
 	private DesiredCapabilities getCapabilities() {
 		DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
 		capabilities.setJavascriptEnabled(true);
-		File folder = new File("./src/main/resources");
-		File[] listOfFiles = folder.listFiles();
-		for(File f : listOfFiles) {
-			log.info("File list: " + f.getName() + " PATH: " + f.getPath());			
-		}
 		String[] phantomArgs = new  String[] {
 			    "--webdriver-loglevel=NONE"
 			};
@@ -116,7 +111,7 @@ public class WebScraperService {
 		capabilities.setCapability("takesScreenshot", false);
 		capabilities.setCapability(
 			    PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-			    "./src/main/resources/phantomjs"
+			    "src/main/resources/phantomjs"
 			);
 		return capabilities;
 	}
