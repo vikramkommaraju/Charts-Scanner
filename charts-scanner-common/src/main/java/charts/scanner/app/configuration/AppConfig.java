@@ -26,11 +26,4 @@ public class AppConfig {
 	
 	@Value("${system.sleep.long}") 
 	private long longSleep;
-	
-	@PostConstruct
-    public void setUp() throws Exception {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
-        System.setProperty("phantomjs.binary.path", "/Users/vkommaraju/git/STS/charts-scanner/charts-scanner-common/src/main/resources/phantomjs");
-        
-    }
 }
