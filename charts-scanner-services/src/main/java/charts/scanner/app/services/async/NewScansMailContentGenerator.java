@@ -22,7 +22,7 @@ public class NewScansMailContentGenerator extends MailContentGenerator {
 	
 	@Override
 	protected String getReportLabel() {
-		return "The following table shows the yield";
+		return "New scans found with this strategy";
 	}
 
 	@Override
