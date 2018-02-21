@@ -1,1 +1,1 @@
-web: java -cp target/classes/:charts-scanner-app/target/classes/:target/dependency/:charts-scanner-app/target/dependency/ charts.scanner.app.SpringBootWebApplication
+web: java -jar charts-scanner-app/target/charts-scanner-app-0.0.1-SNAPSHOT.jar 
