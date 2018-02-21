@@ -1,1 +1,1 @@
-web: java -cp target/classes/:target/dependency/ charts.scanner.app.SpringBootWebApplication
+web: java -cp target/classes/:charts-scanner-app/target/classes/:target/dependency/ charts.scanner.app.SpringBootWebApplication
