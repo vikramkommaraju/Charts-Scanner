@@ -1,7 +1,5 @@
 package charts.scanner.app.services.async;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
