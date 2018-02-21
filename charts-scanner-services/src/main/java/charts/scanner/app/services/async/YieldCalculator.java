@@ -22,6 +22,12 @@ import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Responsible for calculating the yield. Invoked by YeildScheduler
+ * 
+ * @author vkommaraju
+ *
+ */
 @Service
 @Slf4j
 public class YieldCalculator {

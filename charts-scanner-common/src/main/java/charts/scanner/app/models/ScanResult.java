@@ -9,6 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Models the response of the ScannerService
+ * 
+ * @author vkommaraju
+ *
+ */
 @Component
 @Data
 @Builder @AllArgsConstructor @NoArgsConstructor

@@ -23,6 +23,12 @@ import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Async service to scan and report results. Invoked by ScanScheduler
+ * 
+ * @author vkommaraju
+ *
+ */
 @Service
 @Slf4j
 public class ScannerService {

@@ -8,6 +8,12 @@ import com.google.common.collect.ImmutableList;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Content generator for new scans
+ * 
+ * @author vkommaraju
+ *
+ */
 @Service
 @Slf4j
 public class NewScansMailContentGenerator extends MailContentGenerator {

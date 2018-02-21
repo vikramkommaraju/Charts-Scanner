@@ -28,6 +28,12 @@ import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StockExchange;
 import charts.scanner.app.utils.HelperUtils;
 
+/**
+ * Service to scrape StockCharts
+ * 
+ * @author vkommaraju
+ *
+ */
 @Service
 public class WebScraperService {
 

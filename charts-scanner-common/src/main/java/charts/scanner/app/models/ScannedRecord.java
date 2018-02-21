@@ -10,6 +10,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DB entity modeled for a single scanned record
+ * 
+ * @author vkommaraju
+ *
+ */
 @Entity
 @Data
 @Builder @NoArgsConstructor @AllArgsConstructor

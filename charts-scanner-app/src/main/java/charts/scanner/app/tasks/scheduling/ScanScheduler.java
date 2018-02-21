@@ -24,6 +24,10 @@ import charts.scanner.app.services.async.ScannerService;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Responsible for scheduling periodic scans and sending a single batch notification email
+ * 
+ */
 @Service
 @Slf4j
 public class ScanScheduler {

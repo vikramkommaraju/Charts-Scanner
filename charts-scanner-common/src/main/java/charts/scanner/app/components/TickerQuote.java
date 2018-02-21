@@ -22,5 +22,4 @@ public class TickerQuote {
 	
 	@JsonProperty("2. price")
 	private double price;
-	
 }

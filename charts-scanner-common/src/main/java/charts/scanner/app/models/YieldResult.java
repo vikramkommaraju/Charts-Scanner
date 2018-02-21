@@ -9,6 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Models the result of Yield calculator. Holds top N yields in a PriorityQueue
+ * 
+ * @author vkommaraju
+ *
+ */
 @Component
 @Data
 @Builder @AllArgsConstructor @NoArgsConstructor

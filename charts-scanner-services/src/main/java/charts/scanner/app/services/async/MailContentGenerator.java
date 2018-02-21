@@ -15,10 +15,15 @@ import com.hp.gagawa.java.elements.Th;
 import com.hp.gagawa.java.elements.Tr;
 
 import charts.scanner.app.models.ScanStrategy;
-import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Generates HTML based email reports
+ * 
+ * @author vkommaraju
+ *
+ */
 @Slf4j
 public abstract class MailContentGenerator {
 	

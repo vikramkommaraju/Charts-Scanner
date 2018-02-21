@@ -13,7 +13,6 @@ import charts.scanner.app.models.MatchingScansRecord;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.repositories.ScannedRecordsRepository;
-import charts.scanner.app.services.async.MailerService;
 import charts.scanner.app.utils.HelperUtils;
 
 /**
@@ -36,11 +35,19 @@ public class RestEndpointsController {
 		return "index";
 	}
 	
+	/**
+	 * Get all scans for the given strategy
+	 * Usage: /strategy?name=EMA_55_CROSSOVER
+	 */
 	@RequestMapping("/strategy")
 	public List<ScannedRecord> scannedRecordsByStrategy(@RequestParam("name") ScanStrategy strategy) {
 		return repository.findAllRecordsByDateAndStrategy(utils.getToday(true), strategy);
 	}
 	
+	/**
+	 * Get all scans that matched mulitple strategies. Order by match count
+	 * Usage: /matching
+	 */
 	@RequestMapping("/matching")
 	public Set<MatchingScansRecord> matchingScannedRecords() {
 		Map<String, List<ScanStrategy>> matchedRecords = utils.getRecordsToStrategiesMap();
@@ -48,6 +55,10 @@ public class RestEndpointsController {
 		return matchingRecordsInOrder;
 	}
 	
+	/**
+	 * Get info about a ticker
+	 * Usage: /ticker?name=AAPL
+	 */
 	@RequestMapping("/ticker")
 	public List<ScannedRecord> scannedRecordsByTicker(@RequestParam("name") String ticker) {
 		return repository.findAllRecordsByTicker(ticker.toUpperCase());

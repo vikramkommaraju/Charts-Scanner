@@ -21,6 +21,10 @@ import charts.scanner.app.services.async.YieldMailContentGenerator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Responsible for scheduling periodic yeild calculations
+ *
+ */
 @Service
 @Slf4j
 public class YieldScheduler {
