@@ -1,5 +1,7 @@
 package charts.scanner.app.services.async;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,7 @@ import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StockExchange;
 import charts.scanner.app.utils.HelperUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service to scrape StockCharts
@@ -35,6 +38,7 @@ import charts.scanner.app.utils.HelperUtils;
  *
  */
 @Service
+@Slf4j
 public class WebScraperService {
 
 	@Autowired
@@ -99,6 +103,9 @@ public class WebScraperService {
 	private DesiredCapabilities getCapabilities() {
 		DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
 		capabilities.setJavascriptEnabled(true);
+		File folder = new File("./");
+		File[] listOfFiles = folder.listFiles();
+		log.info("List all files: " + listOfFiles);
 		String[] phantomArgs = new  String[] {
 			    "--webdriver-loglevel=NONE"
 			};
@@ -107,7 +114,7 @@ public class WebScraperService {
 		capabilities.setCapability("takesScreenshot", false);
 		capabilities.setCapability(
 			    PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-			    "../src/main/resources/phantomjs"
+			    "/phantomjs"
 			);
 		return capabilities;
 	}
