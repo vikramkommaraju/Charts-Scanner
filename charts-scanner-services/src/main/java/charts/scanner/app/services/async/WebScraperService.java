@@ -105,7 +105,9 @@ public class WebScraperService {
 		capabilities.setJavascriptEnabled(true);
 		File folder = new File("./");
 		File[] listOfFiles = folder.listFiles();
-		log.info("List all files: " + listOfFiles);
+		for(File f : listOfFiles) {
+			log.info("File list: " + f.getName() + " PATH: " + f.getPath());			
+		}
 		String[] phantomArgs = new  String[] {
 			    "--webdriver-loglevel=NONE"
 			};

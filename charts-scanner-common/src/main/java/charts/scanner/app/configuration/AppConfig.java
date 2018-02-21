@@ -26,4 +26,10 @@ public class AppConfig {
 	
 	@Value("${system.sleep.long}") 
 	private long longSleep;
+	
+	@PostConstruct
+    public void setUp() throws Exception {
+        System.setProperty("phantomjs.binary.path", "./phantomjs");
+        
+    }
 }
