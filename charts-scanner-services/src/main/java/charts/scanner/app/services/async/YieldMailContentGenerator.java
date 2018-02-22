@@ -22,7 +22,7 @@ public class YieldMailContentGenerator extends MailContentGenerator {
 	
 	@Override
 	protected String getReportLabel() {
-		return "Top 5 performing stocks";
+		return "Stocks Leaderboard";
 	}
 
 	@Override

@@ -42,15 +42,13 @@ public class YieldCalculator {
 	@Autowired
 	private PriceLookupService priceService;
 	
-	private static final int QUEUE_SIZE = 5;
-	
 	@Async
 	public CompletableFuture<YieldResult> calculate(ScanStrategy strategy) {
 		
 		YieldResultBuilder resultBuilder = YieldResult.builder().strategy(strategy);
 		
 		try {
-			PriorityQueue<PriceActionRecord> queue = new PriorityQueue<PriceActionRecord>(QUEUE_SIZE);
+			PriorityQueue<PriceActionRecord> queue = new PriorityQueue<PriceActionRecord>();
 			List<ScannedRecord> records = getRecordsForStrategySinceLastWeek(strategy);
 			TickerQuoteResponse response = getPricesForRecords(records);
 			calculateYieldAndPopulateQueue(queue, records, response);
@@ -68,27 +66,39 @@ public class YieldCalculator {
 			TickerQuoteResponse response) {
 		if(response.getStockQuotes() != null) {
 			Map<String, TickerQuote> tickerToQouteMap = utils.getTickerToQouteMap(response);
-			for(ScannedRecord record : records) {
-				updateRecordAndAddToQueue(queue, tickerToQouteMap, record);
+			for(String ticker : tickerToQouteMap.keySet()) {
+				updateRecordAndAddToQueue(queue, tickerToQouteMap, getFirstRecordForTicker(ticker, records));
 			}				
 		}
 	}
 
+	private ScannedRecord getFirstRecordForTicker(String ticker, List<ScannedRecord> records) {
+		for(ScannedRecord record : records) {
+			if(record.getTicker().equals(ticker)) {
+				return record;
+			}
+		}
+		return null;
+	}
+
 	private void updateRecordAndAddToQueue(PriorityQueue<PriceActionRecord> queue,
 			Map<String, TickerQuote> tickerToQouteMap, ScannedRecord record) {
+		if(record == null) {
+			return;
+		}
+		
 		double scanPrice = record.getPrice();
 		TickerQuote currentQuote = tickerToQouteMap.get(record.getTicker());
 		if(scanPrice > 0.0 && currentQuote != null) {
 			double currentPrice = currentQuote.getPrice();
 			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
 				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
-				if (queue.size() == 5) {
-					queue.poll();
+				if(yield > 0) { //Only add positive yield stocks
+					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
+							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
+							.build());					
 				}
-				queue.add(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
-						.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
-						.build());
-			} 
+ 			} 
 		}
 	}
 
