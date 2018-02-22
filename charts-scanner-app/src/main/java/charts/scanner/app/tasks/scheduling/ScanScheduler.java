@@ -64,7 +64,7 @@ public class ScanScheduler {
 	}
 
 	private void sendNotification(List<String> emailContent) throws Exception {
-		if(emailContent.size() > 1) {
+		if(emailContent.size() > 0) {
 			notify(getSubject(), emailContent.toString());					
 		} 
 	}
