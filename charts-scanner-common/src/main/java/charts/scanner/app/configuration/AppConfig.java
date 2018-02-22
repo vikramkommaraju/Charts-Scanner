@@ -29,7 +29,6 @@ public class AppConfig {
 	
 	@PostConstruct
     public void setUp() throws Exception {
-        System.setProperty("phantomjs.binary.path", "./phantomjs");
-        
+        System.setProperty("phantomjs.binary.path", "src/main/resources/phantomjs");        
     }
 }

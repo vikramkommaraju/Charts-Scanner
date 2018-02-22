@@ -1,5 +1,5 @@
 #In memory DB config. Comment this out for local dev
-spring.jpa.hibernate.ddl-auto: update
+spring.jpa.hibernate.ddl-auto: create
 spring.datasource.url: jdbc:h2:mem:embedded
 spring.datasource.username: h2
 

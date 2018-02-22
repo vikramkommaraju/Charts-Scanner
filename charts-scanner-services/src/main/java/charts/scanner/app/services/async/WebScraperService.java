@@ -1,5 +1,6 @@
 package charts.scanner.app.services.async;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -46,7 +48,7 @@ public class WebScraperService {
 	private StockChartsConfig config;
 	
 	private WebDriver driver;
-	private boolean headless = true;
+	private boolean usePhantom = false;
 	
 	@PostConstruct
 	private void login() {
@@ -82,15 +84,22 @@ public class WebScraperService {
 	}
 	
 	private WebDriver newDriver() {
-		if(headless) {
-			DesiredCapabilities capabilities = getCapabilities();
-			WebDriver driver = new PhantomJSDriver(capabilities);
-			setDriverProps(driver);
-			return driver;
+		DesiredCapabilities capabilities = getCapabilities();
+		WebDriver driver = createDriver(capabilities);
+		setDriverProps(driver);
+		return driver;	
+	}
+
+	private WebDriver createDriver(DesiredCapabilities capabilities) {
+		if(usePhantom) {
+			return new PhantomJSDriver(capabilities);			
 		} else {
-			return new ChromeDriver();
+			File driverFile = new File("src/main/resources/chromedriver");
+			System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
+	        ChromeOptions options = new ChromeOptions();
+	        options.addArguments("headless");
+			return new ChromeDriver(options);
 		}
-		
 	}
 
 	private void setDriverProps(WebDriver driver) {
@@ -99,18 +108,16 @@ public class WebScraperService {
 	}
 
 	private DesiredCapabilities getCapabilities() {
-		DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-		capabilities.setJavascriptEnabled(true);
-		String[] phantomArgs = new  String[] {
-			    "--webdriver-loglevel=NONE"
-			};
-		capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, phantomArgs);
+		DesiredCapabilities capabilities = null;
+		String[] args = new  String[] {"--webdriver-loglevel=NONE"};
 		Logger.getLogger(PhantomJSDriverService.class.getName()).setLevel(Level.OFF);
-		capabilities.setCapability("takesScreenshot", false);
-		capabilities.setCapability(
-			    PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-			    "src/main/resources/phantomjs"
-			);
+		
+		if(usePhantom) {
+			capabilities = DesiredCapabilities.phantomjs();
+			capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);
+			capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "src/main/resources/phantomjs");			
+			capabilities.setJavascriptEnabled(true);
+		} 
 		return capabilities;
 	}
 	
