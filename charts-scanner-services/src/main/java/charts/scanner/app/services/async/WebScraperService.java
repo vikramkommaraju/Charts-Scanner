@@ -172,7 +172,7 @@ public class WebScraperService {
 				.ticker(getText(tableData, 1)).name(getText(tableData, 2))
 				.exchange(getText(tableData, 3)).sector(getText(tableData, 4))
 				.industry(getText(tableData, 5)).strategy(strategy)
-				.timestamp(utils.getToday(false).split(" ")[1]).build();
+				.timestamp(utils.getToday(false).split(" ")[0]).build();
 	}
 
 	private String getText(List<WebElement> tableData, int index) {

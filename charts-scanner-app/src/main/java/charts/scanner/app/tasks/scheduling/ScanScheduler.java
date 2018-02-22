@@ -70,7 +70,8 @@ public class ScanScheduler {
 	}
 
 	private String getSubject() {
-		return "["+utils.getToday(false)+"]  New Scans Report";
+		String subject = "["+utils.getToday(false)+"]  New Scans";
+		return subject;
 	}
 
 	private List<CompletableFuture<ScanResult>> runScans() {

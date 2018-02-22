@@ -119,7 +119,8 @@ public class YieldScheduler {
 	}
 	
 	private String getSubject() {
-		return "["+utils.getToday(false)+"]  Yield Report";
+		String subject = "["+utils.getToday(false)+"]  Yield Report";
+		return subject;
 	}
 	
 	private List<CompletableFuture<YieldResult>> runYield() {

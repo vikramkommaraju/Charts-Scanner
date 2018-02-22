@@ -93,7 +93,7 @@ public class YieldCalculator {
 			double currentPrice = currentQuote.getPrice();
 			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
 				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
-				if(yield > 0) { //Only add positive yield stocks
+				if(yield > 2.0) { // Records with more than 2% return
 					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
 							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
 							.build());					

@@ -42,7 +42,7 @@ public class HelperUtils {
 	}
 	
 	private String formatDate(Date d, boolean isDateOnly) {
-		String format = isDateOnly ? "yyyy-MM-dd" : "MM-dd-yyyy HH:mm:ss.SS";
+		String format = isDateOnly ? "yyyy-MM-dd" : "HH:mm:ss.SS MM-dd-yyyy ";
 		return new SimpleDateFormat(format).format(d);
 	}
 	
