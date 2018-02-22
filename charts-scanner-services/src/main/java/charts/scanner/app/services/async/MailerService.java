@@ -23,7 +23,7 @@ public class MailerService {
     @Autowired
     private JavaMailSender mailSender;
     
-    private boolean isDev = true;
+    private boolean isDev = false;
     
     public void send(String subject, String content) throws Exception {
     		MimeMessage message = newMessage(getSendTo(), subject, content);
@@ -37,7 +37,7 @@ public class MailerService {
 			return new InternetAddress[] {
 								new InternetAddress("vikthered@gmail.com"),
 								new InternetAddress("sunilmvn@gmail.com"),
-								new InternetAddress("venky.kvmail.com")
+								new InternetAddress("venky.kv@gmail.com")
 					};
 		}
 	}
