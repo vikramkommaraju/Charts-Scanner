@@ -29,9 +29,7 @@ public class MailerService {
     }
 
 	private Address[] getSendTo() throws AddressException {
-		return new InternetAddress[] {new InternetAddress("vikthered@gmail.com"),
-				new InternetAddress("sunilmvn@gmail.com"),
-				new InternetAddress("venky.kv@gmail.com")};
+		return new InternetAddress[] {new InternetAddress("vikthered@gmail.com")};
 	}
 
 	private MimeMessage newMessage(Address[] addresses, String subject, String content) throws MessagingException {
