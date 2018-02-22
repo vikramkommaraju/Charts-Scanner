@@ -80,14 +80,15 @@ public class YieldCalculator {
 		TickerQuote currentQuote = tickerToQouteMap.get(record.getTicker());
 		if(scanPrice > 0.0 && currentQuote != null) {
 			double currentPrice = currentQuote.getPrice();
-			double yield = ((currentPrice-scanPrice)/scanPrice * 100);
-			if(queue.size() == 5) {
-				queue.poll();
-			}
-			queue.add(PriceActionRecord.builder().ticker(record.getTicker())
-					.scanPrice(record.getPrice())
-					.yield(Double.valueOf(String.format("%.2f", yield)))
-					.scanDate(record.getDateScanned()).build());
+			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
+				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
+				if (queue.size() == 5) {
+					queue.poll();
+				}
+				queue.add(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
+						.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
+						.build());
+			} 
 		}
 	}
 
