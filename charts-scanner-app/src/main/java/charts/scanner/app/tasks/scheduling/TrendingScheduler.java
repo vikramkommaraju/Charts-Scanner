@@ -41,7 +41,7 @@ public class TrendingScheduler {
 	private HelperUtils utils;
 	
 	
-	//@Scheduled(fixedRate = 60*60*1000)
+	@Scheduled(fixedRate = 60*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		
@@ -66,7 +66,6 @@ public class TrendingScheduler {
 	}
 	
 	private void run(boolean isDaily) throws Exception {
-		Thread.sleep(1000);
 		CompletableFuture<TrendingTodayResult> result = runYield(isDaily);
 		String emailContent = composeEmailFromResult(result);
 		String subject = getSubject(isDaily);

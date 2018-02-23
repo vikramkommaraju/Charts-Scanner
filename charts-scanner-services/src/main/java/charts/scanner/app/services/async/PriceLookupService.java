@@ -55,8 +55,12 @@ public class PriceLookupService {
 	private TickerQuoteResponse combineResponses(List<TickerQuoteResponse> responses) {
 		TickerQuoteResponse combinedResponse = TickerQuoteResponse.builder().metaData(Maps.newHashMap()).stockQuotes(Lists.newArrayList()).build();
 		for(TickerQuoteResponse res : responses) {
-			//combinedResponse.getMetaData().putAll(res.getMetaData());
-			combinedResponse.getStockQuotes().addAll(res.getStockQuotes());
+			if(res.getMetaData() != null) {
+				combinedResponse.getMetaData().putAll(res.getMetaData());				
+			}
+			if(res.getStockQuotes() != null) {
+				combinedResponse.getStockQuotes().addAll(res.getStockQuotes());				
+			}
 		}
 		return combinedResponse;
 	}
@@ -116,14 +120,6 @@ public class PriceLookupService {
 
 	private String getBaseUrlForBatchRequest() {
 		return "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=";
-	}	
-	
-	public static void main(String[] args) {
-		int tickerSize = 148;
-		int maxBatchSize = 100;
-		float partition = ((float) tickerSize/(float) maxBatchSize);
-		System.out.println((int) (Math.ceil(partition)));
-		System.out.println(partition);
 	}
 	
 }

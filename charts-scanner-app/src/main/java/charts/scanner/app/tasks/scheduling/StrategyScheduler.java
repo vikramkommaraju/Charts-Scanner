@@ -122,7 +122,6 @@ public class StrategyScheduler {
 	}
 	
 	private List<CompletableFuture<StrategyYieldResult>> runYield() throws Exception {
-		Thread.sleep(5000);
 		List<CompletableFuture<StrategyYieldResult>> allResults = Lists.newArrayList();
 		for(ScanStrategy strategy : ScanStrategy.values()) {			
 			CompletableFuture<StrategyYieldResult> yeildResult = calculator.calculate(strategy);
