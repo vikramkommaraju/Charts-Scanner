@@ -67,7 +67,6 @@ public class PriceLookupService {
 		
 		for(Set<String> batch : batches) {
 			TickerQuoteResponse response = runForBatch(batch, apikey);
-			log.info("Response: " + response);
 			responses.add(response);
 		}
 		return responses;
@@ -81,7 +80,7 @@ public class PriceLookupService {
 
 	private TickerQuoteResponse runForBatch(Set<String> tickers, String apikey) {
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
