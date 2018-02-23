@@ -23,7 +23,7 @@ public class MailerService {
     @Autowired
     private JavaMailSender mailSender;
     
-    private boolean isDev = false;
+    private boolean isDev = true;
     
     public void send(String subject, String content) throws Exception {
     		MimeMessage message = newMessage(getSendTo(), subject, content);

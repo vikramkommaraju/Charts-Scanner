@@ -14,9 +14,9 @@ import com.google.common.collect.Lists;
 
 import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.ScanStrategy;
-import charts.scanner.app.models.YieldResult;
+import charts.scanner.app.models.StrategyYieldResult;
 import charts.scanner.app.services.async.MailerService;
-import charts.scanner.app.services.async.YieldCalculator;
+import charts.scanner.app.services.async.StrategyYieldCalculator;
 import charts.scanner.app.services.async.YieldMailContentGenerator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class YieldScheduler {
+public class StrategyYieldScheduler {
 	
 	@Autowired
 	private YieldMailContentGenerator contentGenerator;
@@ -36,7 +36,7 @@ public class YieldScheduler {
 	private MailerService mailerService;
 	
 	@Autowired
-	private YieldCalculator calculator;
+	private StrategyYieldCalculator calculator;
 	
 	@Autowired
 	private HelperUtils utils;
@@ -49,7 +49,7 @@ public class YieldScheduler {
 		log.info("Yield Scheduler started at : " + start);
 		
 		try {
-			List<CompletableFuture<YieldResult>> allResults = runYield();
+			List<CompletableFuture<StrategyYieldResult>> allResults = runYield();
 			List<String> emailContent = compileResultsIntoEmail(allResults);
 			sendNotification(emailContent);
 		} catch (Exception e) {
@@ -61,14 +61,14 @@ public class YieldScheduler {
 	}
 	
 	@SuppressWarnings("finally")
-	private List<String> compileResultsIntoEmail(List<CompletableFuture<YieldResult>> allResults) {
+	private List<String> compileResultsIntoEmail(List<CompletableFuture<StrategyYieldResult>> allResults) {
 		List<String> emailContent = allResults.stream().filter(future -> {
 			try {
 				return future.get().isFoundRecords();
 			} catch (Exception e1) { return false; }
 		}).map(future -> {
 			StringBuilder content = new StringBuilder();
-			YieldResult result;
+			StrategyYieldResult result;
 			try {
 				result = future.get();
 				appendResults(content, result.getStrategy(), result.getQueue());
@@ -119,14 +119,14 @@ public class YieldScheduler {
 	}
 	
 	private String getSubject() {
-		String subject = "["+utils.getToday(false)+"]  Yield Report";
+		String subject = "["+utils.getToday(false)+"]  Strategy Yield Report";
 		return subject;
 	}
 	
-	private List<CompletableFuture<YieldResult>> runYield() {
-		List<CompletableFuture<YieldResult>> allResults = Lists.newArrayList();
+	private List<CompletableFuture<StrategyYieldResult>> runYield() {
+		List<CompletableFuture<StrategyYieldResult>> allResults = Lists.newArrayList();
 		for(ScanStrategy strategy : ScanStrategy.values()) {			
-			CompletableFuture<YieldResult> yeildResult = calculator.calculate(strategy);
+			CompletableFuture<StrategyYieldResult> yeildResult = calculator.calculate(strategy);
 			allResults.add(yeildResult);
 		}
 		

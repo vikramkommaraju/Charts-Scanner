@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -19,6 +22,7 @@ import com.google.common.collect.Sets;
 import charts.scanner.app.components.TickerQuote;
 import charts.scanner.app.components.TickerQuoteResponse;
 import charts.scanner.app.models.MatchingScansRecord;
+import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.repositories.ScannedRecordsRepository;
@@ -112,5 +116,51 @@ public class HelperUtils {
 				.ticker(ticker)
 				.matchedStrategies(matchedStrategies)
 				.build();
+	}
+	
+	public PriorityQueue<PriceActionRecord> getPriorityQueueWithYield(List<ScannedRecord> records,
+			TickerQuoteResponse response) {
+		PriorityQueue<PriceActionRecord> queue = new PriorityQueue<PriceActionRecord>();
+		if (response.getStockQuotes() != null) {
+			Map<String, TickerQuote> tickerToQouteMap = getTickerToQouteMap(response);
+			for (String ticker : tickerToQouteMap.keySet()) {
+				updateRecordAndAddToQueue(queue, tickerToQouteMap, getFirstRecordForTicker(ticker, records));
+			}
+		}
+		return queue;
+	}
+
+	public ScannedRecord getFirstRecordForTicker(String ticker, List<ScannedRecord> records) {
+		for (ScannedRecord record : records) {
+			if (record.getTicker().equals(ticker)) {
+				return record;
+			}
+		}
+		return null;
+	}
+
+	public void updateRecordAndAddToQueue(PriorityQueue<PriceActionRecord> queue,
+			Map<String, TickerQuote> tickerToQouteMap, ScannedRecord record) {
+		if(record == null) {
+			return;
+		}
+		double scanPrice = record.getPrice();
+		TickerQuote currentQuote = tickerToQouteMap.get(record.getTicker());
+		if(scanPrice > 0.0 && currentQuote != null) {
+			double currentPrice = currentQuote.getPrice();
+			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
+				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
+				if(yield > 2.0) { // Records with more than 2% return
+					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
+							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
+							.build());					
+				}
+ 			} 
+		}
+	}
+
+	public List<ScannedRecord> getRecordsForStrategySinceLastWeek(ScanStrategy strategy) {
+		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getPastDate(7), getToday(true), strategy);
+		return records;
 	}
 }

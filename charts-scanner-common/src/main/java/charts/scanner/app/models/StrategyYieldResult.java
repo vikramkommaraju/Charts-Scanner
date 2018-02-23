@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Component
 @Data
 @Builder @AllArgsConstructor @NoArgsConstructor
-public class YieldResult {
+public class StrategyYieldResult {
 
 	private ScanStrategy strategy;
 	private PriorityQueue<PriceActionRecord> queue;
