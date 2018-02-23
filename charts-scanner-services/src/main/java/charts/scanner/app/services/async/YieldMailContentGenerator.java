@@ -22,7 +22,7 @@ public class YieldMailContentGenerator extends MailContentGenerator {
 	
 	@Override
 	protected String getReportLabel() {
-		return "Stocks Weekly Leaderboard (More than 2% yield)";
+		return "Stocks Weekly Leaderboard (More than 5% yield)";
 	}
 
 	@Override
