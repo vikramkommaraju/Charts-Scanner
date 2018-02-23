@@ -46,9 +46,11 @@ public class StrategyYieldCalculator {
 		
 		try {
 			List<ScannedRecord> records = utils.getRecordsForStrategySinceLastWeek(strategy);
-			TickerQuoteResponse response = getPricesForRecords(records);
-			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, MIN_YIELD);
-			resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);
+			if(records != null && records.size() > 0) {
+				TickerQuoteResponse response = getPricesForRecords(records);
+				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, MIN_YIELD);
+				resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);				
+			}
 		} catch (Exception e) {
 			log.info("Failed to calculate yield for : " + strategy);
 			e.printStackTrace();

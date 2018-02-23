@@ -48,9 +48,11 @@ public class TrendingCalculator {
 		
 		try {
 			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
-			TickerQuoteResponse response = getPricesForRecords(records);
-			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 1.0 : 3.0);
-			resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);
+			if(records != null && records.size() > 0) {
+				TickerQuoteResponse response = getPricesForRecords(records);
+				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 1.0 : 3.0);
+				resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);				
+			}
 		} catch (Exception e) {
 			log.info("Failed to calculate trending today. Reason " + e.getMessage());
 			e.printStackTrace();
