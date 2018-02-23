@@ -16,7 +16,7 @@ import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.TrendingTodayResult;
 import charts.scanner.app.services.async.MailerService;
 import charts.scanner.app.services.async.TrendingCalculator;
-import charts.scanner.app.services.async.TrendingTodayMailContentGenerator;
+import charts.scanner.app.services.async.TrendingMailContentGenerator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TrendingScheduler {
 	
 	@Autowired
-	private TrendingTodayMailContentGenerator contentGenerator;
+	private TrendingMailContentGenerator contentGenerator;
 	
 	@Autowired
 	private MailerService mailerService;
@@ -90,7 +90,7 @@ public class TrendingScheduler {
 	private String getContent(TrendingTodayResult result) {
 		List<List<String>> rowData = getRowsFromQueue(result.getQueue(), result.isDaily());
 		if(rowData.size() > 0) {
-			return (contentGenerator.generate(result.isDaily() ? "Daily" : "Weekly" + " Leaderboard", rowData));						
+			return (contentGenerator.generate(result.isDaily() ? "Daily Leaderboard" : "Weekly Leaderboard", rowData));						
 		} else {
 			return null;
 		}
@@ -105,8 +105,7 @@ public class TrendingScheduler {
 			String ticker = record.getTicker();
 			Double scanPrice = record.getScanPrice();
 			Double yield = record.getYield();
-			Map<String, List<ScanStrategy>> recordsToStrategiesMap = isDaily ? utils.getRecordsToStrategiesMap() :
-				utils.getRecordsToStrategiesMap(utils.getPastDate(7), utils.getToday(true));
+			Map<String, List<ScanStrategy>> recordsToStrategiesMap = utils.getRecordsToStrategiesMap(utils.getPastDate(7), utils.getToday(true));
 			List<ScanStrategy> matchedStrategies = recordsToStrategiesMap.get(ticker);
 			reportRow.add(ticker);
 			reportRow.add(scanPrice+"");
