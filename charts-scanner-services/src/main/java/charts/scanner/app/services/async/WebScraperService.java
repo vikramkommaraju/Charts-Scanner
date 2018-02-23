@@ -48,7 +48,7 @@ public class WebScraperService {
 	private StockChartsConfig config;
 	
 	private WebDriver driver;
-	private boolean usePhantom = false;
+	private boolean usePhantom = true;
 	
 	@PostConstruct
 	private void login() {

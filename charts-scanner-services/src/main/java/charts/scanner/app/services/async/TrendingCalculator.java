@@ -31,15 +31,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class TrendingTodayCalculator {
+public class TrendingCalculator {
 
 	@Autowired
 	private HelperUtils utils;
 	
 	@Autowired
 	private PriceLookupService priceService;
-	
-	private final double MIN_YIELD = 0.0;
 	
 	@Async
 	public CompletableFuture<TrendingTodayResult> calculate(boolean daily) {
@@ -49,7 +47,7 @@ public class TrendingTodayCalculator {
 		try {
 			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
 			TickerQuoteResponse response = getPricesForRecords(records);
-			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, MIN_YIELD);
+			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 0.0 : 0.0);
 			resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);
 		} catch (Exception e) {
 			log.info("Failed to calculate trending today. Reason " + e.getMessage());

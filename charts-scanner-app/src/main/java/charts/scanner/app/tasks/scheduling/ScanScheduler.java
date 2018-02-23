@@ -136,16 +136,5 @@ public class ScanScheduler {
 		}
 		return allRows;
 	}
-
-	@Bean
-    public Executor asyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(20);
-        executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("ScannerTask-");
-        executor.initialize();
-        return executor;
-    }
 	
 }

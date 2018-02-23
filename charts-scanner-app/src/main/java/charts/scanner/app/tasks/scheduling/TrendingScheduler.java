@@ -15,7 +15,7 @@ import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.TrendingTodayResult;
 import charts.scanner.app.services.async.MailerService;
-import charts.scanner.app.services.async.TrendingTodayCalculator;
+import charts.scanner.app.services.async.TrendingCalculator;
 import charts.scanner.app.services.async.TrendingTodayMailContentGenerator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class TrendingScheduler {
 	private MailerService mailerService;
 	
 	@Autowired
-	private TrendingTodayCalculator calculator;
+	private TrendingCalculator calculator;
 	
 	@Autowired
 	private HelperUtils utils;
@@ -66,6 +66,7 @@ public class TrendingScheduler {
 	}
 	
 	private void run(boolean isDaily) throws Exception {
+		Thread.sleep(1000);
 		CompletableFuture<TrendingTodayResult> result = runYield(isDaily);
 		String emailContent = composeEmailFromResult(result);
 		String subject = getSubject(isDaily);

@@ -156,7 +156,7 @@ public class HelperUtils {
 			double currentPrice = currentQuote.getPrice();
 			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
 				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
-				if(yield > minYield) { // Records with more than min return
+				if(yield >= minYield) { // Records with more than min return
 					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
 							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
 							.build());					

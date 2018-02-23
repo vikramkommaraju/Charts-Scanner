@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -119,7 +120,8 @@ public class StrategyYieldScheduler {
 		return subject;
 	}
 	
-	private List<CompletableFuture<StrategyYieldResult>> runYield() {
+	private List<CompletableFuture<StrategyYieldResult>> runYield() throws Exception {
+		Thread.sleep(5000);
 		List<CompletableFuture<StrategyYieldResult>> allResults = Lists.newArrayList();
 		for(ScanStrategy strategy : ScanStrategy.values()) {			
 			CompletableFuture<StrategyYieldResult> yeildResult = calculator.calculate(strategy);
