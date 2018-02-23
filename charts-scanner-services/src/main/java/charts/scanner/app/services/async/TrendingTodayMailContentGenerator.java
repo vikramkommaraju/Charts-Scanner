@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class TrendingTodayMailContentGenerator extends MailContentGenerator {
 
-	List<String> columnHeaders = ImmutableList.of("Ticker", "Scan Price", "Yield", "Strategies Matched");
+	List<String> columnHeaders = ImmutableList.of("Ticker", "Scan Price", "Yield", "Strategies Matched", "Chart");
 	
 	@Override
 	protected String getReportLabel() {

@@ -15,9 +15,11 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.hp.gagawa.java.elements.A;
 
 import charts.scanner.app.components.TickerQuote;
 import charts.scanner.app.components.TickerQuoteResponse;
@@ -40,7 +42,8 @@ public class HelperUtils {
 
 	@Autowired
 	private ScannedRecordsRepository repository;
-	
+	private Map<String, String> exchangeMapping = ImmutableMap.of("NASD", "NASDAQ", "NYSE", "NYSE");
+
 	public String getToday(boolean isDateOnly) {
 		return formatDate(getDate(), isDateOnly);
 	}
@@ -159,7 +162,7 @@ public class HelperUtils {
 				if(yield >= minYield) { // Records with more than min return
 					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
 							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
-							.build());					
+							.exchange(record.getExchange()).build());					
 				}
  			} 
 		}
@@ -178,6 +181,15 @@ public class HelperUtils {
 	public List<ScannedRecord> getRecordsForTheWeek() {
 		List<ScannedRecord> records = repository.findAllRecordsByDateRange(getPastDate(7), getToday(true));
 		return records;
+	}
+	
+	public String getExchangeMapping(String exchange) {
+		return exchangeMapping.get(exchange);
+	}
+	
+	
+	public String getLinkForTicker(String exchange, String ticker) {
+		return "<a href=\"https://www.tradingview.com/chart/?symbol=" +getExchangeMapping(exchange)+":"+ticker+"\">View Chart</a>";
 	}
 	
 }

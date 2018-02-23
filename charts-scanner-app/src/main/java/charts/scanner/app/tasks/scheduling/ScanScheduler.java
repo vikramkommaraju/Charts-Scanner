@@ -43,7 +43,7 @@ public class ScanScheduler {
 	@Autowired
 	private HelperUtils utils;
 		
-	@Scheduled(fixedRate = 5*60*1000)
+	//@Scheduled(fixedRate = 5*60*1000)
 	//@Scheduled(cron="0 0/5 7-15 * * ?") //Every 5 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		
@@ -132,6 +132,7 @@ public class ScanScheduler {
 			List<String> strategies = matchedStrategies.stream().map(str -> str.toString()).filter(str -> !str.equals(strategy.toString())).collect(Collectors.toList());
 			reportRow.add(ticker);
 			reportRow.add(strategies.size() > 0 ? strategies.toString() : "None matching");
+			reportRow.add(utils.getLinkForTicker(record.getExchange(), record.getTicker()));
 			allRows.add(reportRow);
 		}
 		return allRows;

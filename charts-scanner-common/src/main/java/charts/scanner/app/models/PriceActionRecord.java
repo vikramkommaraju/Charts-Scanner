@@ -22,6 +22,7 @@ public class PriceActionRecord implements Comparable<PriceActionRecord> {
 	private String scanDate;
 	private Double scanPrice;
 	private Double yield;
+	private String exchange;
 	
 	@Override
 	public int compareTo(PriceActionRecord that) {

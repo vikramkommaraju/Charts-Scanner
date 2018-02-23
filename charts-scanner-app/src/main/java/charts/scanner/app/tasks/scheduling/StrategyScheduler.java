@@ -41,7 +41,7 @@ public class StrategyScheduler {
 	private HelperUtils utils;
 	
 	
-	@Scheduled(fixedRate = 60*60*1000)
+	@Scheduled(fixedRate = 2*60*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		log.info("Yield Scheduler started at : " + utils.getDate());
@@ -99,6 +99,7 @@ public class StrategyScheduler {
 			reportRow.add(dateScanned);
 			reportRow.add(scanPrice+"");
 			reportRow.add(yield+"");
+			reportRow.add(utils.getLinkForTicker(record.getExchange(), record.getTicker()));
 			allRows.add(reportRow);
 		}
 		

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewScansMailContentGenerator extends MailContentGenerator {
 
-	List<String> columnHeaders = ImmutableList.of("Ticker", "Also Matched Within Past Week");
+	List<String> columnHeaders = ImmutableList.of("Ticker", "Also Matched Within Past Week", "Chart");
 	
 	@Override
 	protected String getReportLabel() {

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class YieldMailContentGenerator extends MailContentGenerator {
 
-	List<String> columnHeaders = ImmutableList.of("Ticker", "Date Scanned", "Scan Price", "Yield");
+	List<String> columnHeaders = ImmutableList.of("Ticker", "Date Scanned", "Scan Price", "Yield", "Chart");
 	
 	@Override
 	protected String getReportLabel() {
