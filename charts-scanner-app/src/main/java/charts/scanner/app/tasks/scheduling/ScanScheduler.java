@@ -43,7 +43,7 @@ public class ScanScheduler {
 	@Autowired
 	private HelperUtils utils;
 		
-	//@Scheduled(fixedRate = 5*60*1000)
+	@Scheduled(fixedRate = 5*60*1000)
 	//@Scheduled(cron="0 0/5 7-15 * * ?") //Every 5 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		

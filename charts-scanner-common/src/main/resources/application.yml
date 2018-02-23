@@ -38,7 +38,7 @@ stockCharts:
     password: YELLOW-WINDY-804
 
 alphaVantage:
-    apiKey: KA87B0YR4EUJ8MKB
+    apiKeys: KA87B0YR4EUJ8MKB, 1DTKOY2QKA7MQNN1, CHT571LJ253B157I, FM1IK4BJWD021W3V, 
     timeout: 3000
         
 tradingView:

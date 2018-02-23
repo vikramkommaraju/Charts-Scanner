@@ -39,6 +39,8 @@ public class TrendingCalculator {
 	@Autowired
 	private PriceLookupService priceService;
 	
+	private final String apiKey = "CHT571LJ253B157I";
+	
 	@Async
 	public CompletableFuture<TrendingTodayResult> calculate(boolean daily) {
 		
@@ -47,7 +49,7 @@ public class TrendingCalculator {
 		try {
 			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
 			TickerQuoteResponse response = getPricesForRecords(records);
-			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 0.0 : 0.0);
+			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 1.0 : 3.0);
 			resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);
 		} catch (Exception e) {
 			log.info("Failed to calculate trending today. Reason " + e.getMessage());
@@ -61,7 +63,7 @@ public class TrendingCalculator {
 	private TickerQuoteResponse getPricesForRecords(List<ScannedRecord> records)
 			throws InterruptedException, ExecutionException {
 		Set<String> tickers = records.stream().map(record -> record.getTicker()).collect(Collectors.toSet());
-		TickerQuoteResponse response = priceService.lookup(tickers).get();
+		TickerQuoteResponse response = priceService.lookup(tickers, apiKey).get();
 		return response;
 	}
 

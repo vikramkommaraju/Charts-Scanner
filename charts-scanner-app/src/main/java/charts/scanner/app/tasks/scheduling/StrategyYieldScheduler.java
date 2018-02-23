@@ -41,7 +41,7 @@ public class StrategyYieldScheduler {
 	private HelperUtils utils;
 	
 	
-	//@Scheduled(fixedRate = 30*60*1000)
+	@Scheduled(fixedRate = 30*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		log.info("Yield Scheduler started at : " + utils.getDate());

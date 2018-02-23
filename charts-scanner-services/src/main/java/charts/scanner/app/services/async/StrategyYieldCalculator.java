@@ -36,7 +36,8 @@ public class StrategyYieldCalculator {
 	@Autowired
 	private PriceLookupService priceService;
 	
-	private final double MIN_YIELD = 2.0;
+	private final String apiKey = "1DTKOY2QKA7MQNN1";
+	private final double MIN_YIELD = 5.0;
 	
 	@Async
 	public CompletableFuture<StrategyYieldResult> calculate(ScanStrategy strategy) {
@@ -60,7 +61,7 @@ public class StrategyYieldCalculator {
 	private TickerQuoteResponse getPricesForRecords(List<ScannedRecord> records)
 			throws InterruptedException, ExecutionException {
 		Set<String> tickers = records.stream().map(record -> record.getTicker()).collect(Collectors.toSet());
-		TickerQuoteResponse response = priceService.lookup(tickers).get();
+		TickerQuoteResponse response = priceService.lookup(tickers, apiKey).get();
 		return response;
 	}
 

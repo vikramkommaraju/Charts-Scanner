@@ -45,6 +45,8 @@ public class ScannerService {
 	@Autowired
 	private ScannedRecordsRepository repository;
 	
+	private final String apiKey = "KA87B0YR4EUJ8MKB";
+	
 	@Async
 	public CompletableFuture<ScanResult> scan(ScanStrategy strategy) {
 		
@@ -106,7 +108,7 @@ public class ScannerService {
 	private TickerQuoteResponse lookup(ScanResultBuilder resultBuilder, List<ScannedRecord> scanResult) throws Exception {
 		resultBuilder.stage(JobStage.PRICE_LOOKUP);
 		Set<String> tickers = extractTickersFromResult(scanResult);
-		TickerQuoteResponse response = priceService.lookup(tickers).get();
+		TickerQuoteResponse response = priceService.lookup(tickers, apiKey).get();
 		return response;
 	}
 

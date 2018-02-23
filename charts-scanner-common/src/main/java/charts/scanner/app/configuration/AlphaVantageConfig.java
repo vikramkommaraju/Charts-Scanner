@@ -1,5 +1,7 @@
 package charts.scanner.app.configuration;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +20,8 @@ import lombok.Setter;
 @Getter @Setter
 public class AlphaVantageConfig {
 
-	@Value("${alphaVantage.apiKey}") 
-	private String apiKey;
+	@Value("${alphaVantage.apiKeys}") 
+	private List<String> apiKeys;
 	
 	@Value("${alphaVantage.timeout}") 
 	private int timeout;
