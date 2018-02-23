@@ -1,13 +1,11 @@
 package charts.scanner.app.tasks.scheduling;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -42,11 +40,10 @@ public class StrategyYieldScheduler {
 	private HelperUtils utils;
 	
 	
-	@Scheduled(fixedRate = 30*60*1000)
+	//@Scheduled(fixedRate = 30*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
-		Instant start = Instant.now();
-		log.info("Yield Scheduler started at : " + start);
+		log.info("Yield Scheduler started at : " + utils.getDate());
 		
 		try {
 			List<CompletableFuture<StrategyYieldResult>> allResults = runYield();
@@ -56,8 +53,7 @@ public class StrategyYieldScheduler {
 			log.error("Failed to complete all yields. Reason: " + e.getMessage());
 		}
 		
-		Instant end = Instant.now();
-		log.info("Yield Scheduler ended at : " + end);
+		log.info("Yield Scheduler ended at : " + utils.getDate());
 	}
 	
 	@SuppressWarnings("finally")
@@ -85,7 +81,7 @@ public class StrategyYieldScheduler {
 	private void appendResults(StringBuilder content, ScanStrategy strategy, PriorityQueue<PriceActionRecord> priorityQueue) {
 		List<List<String>> rowData = getRowsFromQueue(strategy, priorityQueue);
 		if(rowData.size() > 0) {
-			content.append(contentGenerator.generate(strategy, rowData));						
+			content.append(contentGenerator.generate(strategy.toString(), rowData));						
 		}
 	}
 

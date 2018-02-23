@@ -1,6 +1,5 @@
 package charts.scanner.app.tasks.scheduling;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -44,12 +43,11 @@ public class ScanScheduler {
 	@Autowired
 	private HelperUtils utils;
 		
-	@Scheduled(fixedRate = 5*60*1000)
+	//@Scheduled(fixedRate = 5*60*1000)
 	//@Scheduled(cron="0 0/5 7-15 * * ?") //Every 5 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		
-		Instant start = Instant.now();
-		log.info("Scan Scheduler started at : " + start);
+		log.info("Scan Scheduler started at : " + utils.getDate());
 		
 		try {
 			List<CompletableFuture<ScanResult>> allResults = runScans();
@@ -59,8 +57,7 @@ public class ScanScheduler {
 			log.error("Failed to complete all scans. Reason: " + e.getMessage());
 		}
 		
-		Instant end = Instant.now();
-		log.info("Scan Scheduler ended at : " + end);
+		log.info("Scan Scheduler ended at : " + utils.getDate());
 	}
 
 	private void sendNotification(List<String> emailContent) throws Exception {
@@ -115,7 +112,7 @@ public class ScanScheduler {
 	private void appendResults(StringBuilder content, ScanStrategy strategy, List<ScannedRecord> records) {
 		List<List<String>> rowData = getRowsFromRecords(strategy, records);
 		if(rowData.size() > 0) {
-			content.append(contentGenerator.generate(strategy, rowData));						
+			content.append(contentGenerator.generate(strategy.toString(), rowData));						
 		}
 	}
 	

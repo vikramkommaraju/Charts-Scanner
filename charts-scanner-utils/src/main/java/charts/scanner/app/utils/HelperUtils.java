@@ -1,15 +1,15 @@
 package charts.scanner.app.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class HelperUtils {
 	private ScannedRecordsRepository repository;
 	
 	public String getToday(boolean isDateOnly) {
-		return formatDate(new Date(), isDateOnly);
+		return formatDate(getDate(), isDateOnly);
 	}
 	
 	private String formatDate(Date d, boolean isDateOnly) {
@@ -51,11 +51,17 @@ public class HelperUtils {
 	}
 	
 	public String getPastDate(int lookbackDays) {
-		return formatDate(DateUtils.addDays(new Date(),-lookbackDays), true);
+		return formatDate(DateUtils.addDays(getDate(),-lookbackDays), true);
 	}
 	
 	public Map<String, List<ScanStrategy>> getRecordsToStrategiesMap() {
 		return getRecordsToStrategiesMap(getToday(true), getToday(true));
+	}
+	
+	public Date getDate() {
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
+		Date currentDate = calendar.getTime();
+		return currentDate;
 	}
 	
 	public Map<String, List<ScanStrategy>> getRecordsToStrategiesMap(String startDate, String endDate) {
@@ -119,12 +125,12 @@ public class HelperUtils {
 	}
 	
 	public PriorityQueue<PriceActionRecord> getPriorityQueueWithYield(List<ScannedRecord> records,
-			TickerQuoteResponse response) {
+			TickerQuoteResponse response, double minYield) {
 		PriorityQueue<PriceActionRecord> queue = new PriorityQueue<PriceActionRecord>();
 		if (response.getStockQuotes() != null) {
 			Map<String, TickerQuote> tickerToQouteMap = getTickerToQouteMap(response);
 			for (String ticker : tickerToQouteMap.keySet()) {
-				updateRecordAndAddToQueue(queue, tickerToQouteMap, getFirstRecordForTicker(ticker, records));
+				updateRecordAndAddToQueue(queue, tickerToQouteMap, getFirstRecordForTicker(ticker, records), minYield);
 			}
 		}
 		return queue;
@@ -140,7 +146,7 @@ public class HelperUtils {
 	}
 
 	public void updateRecordAndAddToQueue(PriorityQueue<PriceActionRecord> queue,
-			Map<String, TickerQuote> tickerToQouteMap, ScannedRecord record) {
+			Map<String, TickerQuote> tickerToQouteMap, ScannedRecord record, double minYield) {
 		if(record == null) {
 			return;
 		}
@@ -150,7 +156,7 @@ public class HelperUtils {
 			double currentPrice = currentQuote.getPrice();
 			if (currentPrice > 0) { // For some reason the API returns 0 sometimes for a few tickers
 				double yield = ((currentPrice - scanPrice) / scanPrice * 100);
-				if(yield > 2.0) { // Records with more than 2% return
+				if(yield > minYield) { // Records with more than min return
 					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
 							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
 							.build());					
@@ -163,4 +169,15 @@ public class HelperUtils {
 		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getPastDate(7), getToday(true), strategy);
 		return records;
 	}
+	
+	public List<ScannedRecord> getRecordsForToday() {
+		List<ScannedRecord> records = repository.findAllRecordsByDate(getToday(true));
+		return records;
+	}
+	
+	public List<ScannedRecord> getRecordsForTheWeek() {
+		List<ScannedRecord> records = repository.findAllRecordsByDateRange(getPastDate(7), getToday(true));
+		return records;
+	}
+	
 }

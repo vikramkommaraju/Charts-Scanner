@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Models the result of Yield calculator. Holds yields in a PriorityQueue
+ * Models the result of Trending today calculator. Holds results in a Priority Queue
  * 
  * @author vkommaraju
  *
@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @Component
 @Data
 @Builder @AllArgsConstructor @NoArgsConstructor
-public class StrategyYieldResult {
+public class TrendingTodayResult {
 
-	private ScanStrategy strategy;
 	private PriorityQueue<PriceActionRecord> queue;
 	private boolean foundRecords;
+	private boolean isDaily;
 }

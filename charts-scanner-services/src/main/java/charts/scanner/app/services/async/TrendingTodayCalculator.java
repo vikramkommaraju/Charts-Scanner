@@ -17,18 +17,21 @@ import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StrategyYieldResult;
 import charts.scanner.app.models.StrategyYieldResult.StrategyYieldResultBuilder;
+import charts.scanner.app.models.TrendingTodayResult;
+import charts.scanner.app.models.TrendingTodayResult.TrendingTodayResultBuilder;
+import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Responsible for calculating the yield for a given strategy. Invoked by Strategy YeildScheduler
+ * Responsible for calculating scans trendin today. Invoked by TrendingTodayScheduler
  * 
  * @author vkommaraju
  *
  */
 @Service
 @Slf4j
-public class StrategyYieldCalculator {
+public class TrendingTodayCalculator {
 
 	@Autowired
 	private HelperUtils utils;
@@ -36,20 +39,20 @@ public class StrategyYieldCalculator {
 	@Autowired
 	private PriceLookupService priceService;
 	
-	private final double MIN_YIELD = 2.0;
+	private final double MIN_YIELD = 0.0;
 	
 	@Async
-	public CompletableFuture<StrategyYieldResult> calculate(ScanStrategy strategy) {
+	public CompletableFuture<TrendingTodayResult> calculate(boolean daily) {
 		
-		StrategyYieldResultBuilder resultBuilder = StrategyYieldResult.builder().strategy(strategy);
+		TrendingTodayResultBuilder resultBuilder = TrendingTodayResult.builder().isDaily(daily);
 		
 		try {
-			List<ScannedRecord> records = utils.getRecordsForStrategySinceLastWeek(strategy);
+			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
 			TickerQuoteResponse response = getPricesForRecords(records);
 			PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, MIN_YIELD);
 			resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);
 		} catch (Exception e) {
-			log.info("Failed to calculate yield for : " + strategy);
+			log.info("Failed to calculate trending today. Reason " + e.getMessage());
 			e.printStackTrace();
 		}
 		

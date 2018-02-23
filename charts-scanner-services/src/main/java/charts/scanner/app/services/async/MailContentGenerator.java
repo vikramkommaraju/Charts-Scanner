@@ -30,10 +30,10 @@ public abstract class MailContentGenerator {
 	@Autowired
 	HelperUtils utils;
 	
-	public String generate(ScanStrategy strategy, List<List<String>> rowData) {
+	public String generate(String header, List<List<String>> rowData) {
 		Div div = new Div();
 		div.appendChild(getSeparator());
-		div.appendChild(getReportHeader(strategy.toString(), getReportLabel()));
+		div.appendChild(getReportHeader(header, getReportLabel()));
 		div.appendChild(getTable(getColumnHeaders(), rowData));
 		div.appendChild(getSeparator());
 		return div.write();
