@@ -42,7 +42,7 @@ public class TrendingCalculator {
 	private final String apiKey = "CHT571LJ253B157I";
 	
 	@Async
-	public CompletableFuture<TrendingTodayResult> calculate(boolean daily) {
+	public CompletableFuture<TrendingTodayResult> calculate(boolean daily, double minYield) {
 		
 		TrendingTodayResultBuilder resultBuilder = TrendingTodayResult.builder().isDaily(daily);
 		
@@ -50,7 +50,7 @@ public class TrendingCalculator {
 			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
 			if(records != null && records.size() > 0) {
 				TickerQuoteResponse response = getPricesForRecords(records);
-				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, daily ? 1.0 : 3.0);
+				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, minYield);
 				resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);				
 			}
 		} catch (Exception e) {

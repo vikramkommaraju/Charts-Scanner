@@ -30,6 +30,9 @@ public interface ScannedRecordsRepository extends CrudRepository<ScannedRecord, 
 	@Query("select record from ScannedRecord record where record.ticker = ?1")
 	List<ScannedRecord> findAllRecordsByTicker(String ticker);
 	
+	@Query("select record from ScannedRecord record where record.ticker = ?1 and record.dateScanned >= ?2 and record.dateScanned <= ?3")
+	List<ScannedRecord> findAllRecordsByTickerAndDateRange(String ticker, String startDate, String endDate);
+	
 	@Query("select record from ScannedRecord record where record.dateScanned = ?1")
 	List<ScannedRecord> findAllRecordsByDate(String date);
 	

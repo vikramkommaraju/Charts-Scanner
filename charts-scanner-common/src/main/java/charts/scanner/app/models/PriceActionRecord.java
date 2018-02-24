@@ -21,6 +21,7 @@ public class PriceActionRecord implements Comparable<PriceActionRecord> {
 	private String ticker;
 	private String scanDate;
 	private Double scanPrice;
+	private Double currentPrice;
 	private Double yield;
 	private String exchange;
 	

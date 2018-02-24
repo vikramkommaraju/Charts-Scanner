@@ -1,5 +1,6 @@
 package charts.scanner.app.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import charts.scanner.app.models.MatchingScansRecord;
 import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
+import charts.scanner.app.models.StrategyHisoryRecord;
 import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,8 +50,18 @@ public class HelperUtils {
 		return formatDate(getDate(), isDateOnly);
 	}
 	
+	public String getFriendlyDate(String date, String timestamp) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SS MM-dd-yyyy");
+			Date d = sdf.parse(timestamp+" "+date);
+			SimpleDateFormat sdfs = new SimpleDateFormat("MM/dd hh:mm a");
+			return sdfs.format(d);
+		} catch (ParseException e) {
+			return date+" "+timestamp;
+		}
+	}
 	private String formatDate(Date d, boolean isDateOnly) {
-		String format = isDateOnly ? "yyyy-MM-dd" : "HH:mm:ss.SS MM-dd-yyyy ";
+		String format = isDateOnly ? "yyyy-MM-dd" : "HH:mm:ss.SS MM-dd-yyyy";
 		return new SimpleDateFormat(format).format(d);
 	}
 	
@@ -80,6 +92,23 @@ public class HelperUtils {
 			matchedRecords.put(record.getTicker(), strategies);		
 		}
 		return matchedRecords;
+	}
+	
+	public Map<String, List<ScannedRecord>> getRecordHistoryByDate(String ticker, String startDate, String endDate) {
+		Map<String, List<ScannedRecord>> dateToScansMap = Maps.newHashMap();
+		List<ScannedRecord> records = repository.findAllRecordsByTickerAndDateRange(ticker, startDate, endDate);
+		for(ScannedRecord record : records) {
+			
+			if(!dateToScansMap.containsKey(record.getDateScanned())) {
+				dateToScansMap.put(record.getDateScanned(), Lists.newArrayList());
+			}
+			
+			List<ScannedRecord> scans = dateToScansMap.get(record.getDateScanned());
+			scans.add(record);
+			dateToScansMap.put(record.getDateScanned(), scans);
+			
+		}
+		return dateToScansMap;
 	}
 	
 	public boolean isExistingRecordForStrategy(String ticker, ScanStrategy strategy) {
@@ -162,7 +191,7 @@ public class HelperUtils {
 				if(yield >= minYield) { // Records with more than min return
 					queue.offer(PriceActionRecord.builder().ticker(record.getTicker()).scanPrice(record.getPrice())
 							.yield(Double.valueOf(String.format("%.2f", yield))).scanDate(record.getDateScanned())
-							.exchange(record.getExchange()).build());					
+							.currentPrice(currentPrice).exchange(record.getExchange()).build());					
 				}
  			} 
 		}
@@ -170,6 +199,11 @@ public class HelperUtils {
 
 	public List<ScannedRecord> getRecordsForStrategySinceLastWeek(ScanStrategy strategy) {
 		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getPastDate(7), getToday(true), strategy);
+		return records;
+	}
+	
+	public List<ScannedRecord> getRecordsForStrategyForToday(ScanStrategy strategy) {
+		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getToday(true), getToday(true), strategy);
 		return records;
 	}
 	
@@ -192,4 +226,70 @@ public class HelperUtils {
 		return "<a href=\"https://www.tradingview.com/chart/?symbol=" +getExchangeMapping(exchange)+":"+ticker+"\">View Chart</a>";
 	}
 	
+	public String italisize(String text) {
+		return "<i>"+text+"<//i>";
+	}
+	
+	public String bold(String text) {
+		return "<b>"+text+"<//b>";
+	}
+	
+	public String getStrategyHistory(String ticker) {
+		Map<String, List<ScannedRecord>> dateToScansMap = getRecordHistoryByDate(ticker, getPastDate(7), getToday(true));
+		StringBuilder strBuilder = new StringBuilder();
+		int dayIndex = 7;
+		while(dayIndex > 0) {
+			String key = getPastDate(dayIndex); // To traverse the map in time order since simply iterating the map wont guarantee time sequence
+			if(dateToScansMap.containsKey(key)) {
+				strBuilder.append("\n");
+				List<ScannedRecord> scansMatched = dateToScansMap.get(key);
+				scansMatched.stream().forEach(rec -> {
+					String scanDate = key;
+					String strategy = rec.getStrategy().toString();
+					String timestamp = rec.getTimestamp();
+					String dateTime = getFriendlyDate(scanDate, timestamp);
+					String price = "$"+rec.getPrice();
+					strBuilder.append(dateTime +" : "+strategy+" : "+price);
+				});
+				strBuilder.append("\n");
+			}
+			
+			dayIndex--;
+					
+		}
+		
+		return strBuilder.toString();
+	}
+	
+	public List<List<String>> getRowsFromQueue(PriorityQueue<PriceActionRecord> priorityQueue) {
+		List<List<String>> allRows = Lists.newArrayList();
+		while(!priorityQueue.isEmpty()) {
+			PriceActionRecord record = priorityQueue.poll();
+			List<String> reportRow = Lists.newArrayList();
+			String ticker = record.getTicker();
+			String dateScanned = record.getScanDate();
+			Double scanPrice = record.getScanPrice();
+			Double currentPrice = record.getCurrentPrice();
+			Double yield = record.getYield();
+			String strategyHistory = getStrategyHistory(ticker);
+			reportRow.add(bold(ticker));
+			reportRow.add(dateScanned);
+			reportRow.add("$"+scanPrice+"");
+			reportRow.add("$"+currentPrice+"");
+			reportRow.add(bold(yield+"%"));
+			reportRow.add(italisize(strategyHistory));
+			reportRow.add(getLinkForTicker(record.getExchange(), record.getTicker()));
+			allRows.add(reportRow);
+		}
+		
+		return allRows;
+	}
+	
+	public String getReportHeader(boolean isDaily) {
+		return isDaily ? "Daily Leaderboard" : "Weekly Leaderboard";
+	}
+	
+	public String getTrendingReportLabel(boolean isDaily) {
+		return "These stocks have been trending " + (isDaily ? "Today!" : "This Week!");
+	}
 }

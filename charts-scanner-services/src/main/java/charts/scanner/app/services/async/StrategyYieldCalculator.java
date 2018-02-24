@@ -37,18 +37,18 @@ public class StrategyYieldCalculator {
 	private PriceLookupService priceService;
 	
 	private final String apiKey = "1DTKOY2QKA7MQNN1";
-	private final double MIN_YIELD = 5.0;
 	
 	@Async
-	public CompletableFuture<StrategyYieldResult> calculate(ScanStrategy strategy) {
+	public CompletableFuture<StrategyYieldResult> calculate(ScanStrategy strategy, boolean isDaily, double minYield) {
 		
 		StrategyYieldResultBuilder resultBuilder = StrategyYieldResult.builder().strategy(strategy);
 		
 		try {
-			List<ScannedRecord> records = utils.getRecordsForStrategySinceLastWeek(strategy);
+			List<ScannedRecord> records = isDaily ? utils.getRecordsForStrategyForToday(strategy) : 
+												utils.getRecordsForStrategySinceLastWeek(strategy);
 			if(records != null && records.size() > 0) {
 				TickerQuoteResponse response = getPricesForRecords(records);
-				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, MIN_YIELD);
+				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, minYield);
 				resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);				
 			}
 		} catch (Exception e) {

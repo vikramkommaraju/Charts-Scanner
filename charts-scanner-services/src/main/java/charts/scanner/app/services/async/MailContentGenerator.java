@@ -3,7 +3,9 @@ package charts.scanner.app.services.async;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Div;
@@ -14,9 +16,7 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Th;
 import com.hp.gagawa.java.elements.Tr;
 
-import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.utils.HelperUtils;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Generates HTML based email reports
@@ -24,23 +24,24 @@ import lombok.extern.slf4j.Slf4j;
  * @author vkommaraju
  *
  */
-@Slf4j
-public abstract class MailContentGenerator {
+@Service
+public class MailContentGenerator {
 	
 	@Autowired
 	HelperUtils utils;
 	
-	public String generate(String header, List<List<String>> rowData) {
+	public String generate(String reportTitle, String reportLabel, List<List<String>> rowData) {
+		return generate(reportTitle, reportLabel, getDefaultColumnHeaders(), rowData);
+	}
+
+	public String generate(String reportTitle, String reportLabel, List<String> columnHeaders, List<List<String>> rowData) {
 		Div div = new Div();
 		div.appendChild(getSeparator());
-		div.appendChild(getReportHeader(header, getReportLabel()));
-		div.appendChild(getTable(getColumnHeaders(), rowData));
+		div.appendChild(getReportHeader(reportTitle, reportLabel));
+		div.appendChild(getTable(columnHeaders, rowData));
 		div.appendChild(getSeparator());
 		return div.write();
 	}
-
-	protected abstract String getReportLabel();
-	protected abstract List<String> getColumnHeaders();
 	
 	 protected Hr getSeparator() {
  		Hr hr = new Hr();
@@ -99,4 +100,9 @@ public abstract class MailContentGenerator {
 		}
 		return headerNodes;
 	}
+	
+	public List<String> getDefaultColumnHeaders() {
+		return ImmutableList.of("Ticker", "Scanned Date", "Scan Price", "Current Price", "Yield", "Strategy History", "Chart");
+	}
+
 }

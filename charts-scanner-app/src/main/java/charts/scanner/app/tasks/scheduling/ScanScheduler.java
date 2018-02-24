@@ -3,22 +3,20 @@ package charts.scanner.app.tasks.scheduling;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import charts.scanner.app.models.ScanResult;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
+import charts.scanner.app.services.async.MailContentGenerator;
 import charts.scanner.app.services.async.MailerService;
-import charts.scanner.app.services.async.NewScansMailContentGenerator;
 import charts.scanner.app.services.async.ScannerService;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +33,7 @@ public class ScanScheduler {
 	private ScannerService scanner;
 	
 	@Autowired
-	private NewScansMailContentGenerator contentGenerator;
+	private MailContentGenerator contentGenerator;
 	
 	@Autowired
 	private MailerService mailerService;
@@ -43,7 +41,7 @@ public class ScanScheduler {
 	@Autowired
 	private HelperUtils utils;
 		
-	@Scheduled(fixedRate = 5*60*1000)
+	//@Scheduled(fixedRate = 5*60*1000)
 	//@Scheduled(cron="0 0/5 7-15 * * ?") //Every 5 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		
@@ -112,10 +110,15 @@ public class ScanScheduler {
 	private void appendResults(StringBuilder content, ScanStrategy strategy, List<ScannedRecord> records) {
 		List<List<String>> rowData = getRowsFromRecords(strategy, records);
 		if(rowData.size() > 0) {
-			content.append(contentGenerator.generate(strategy.toString(), rowData));						
+			content.append(contentGenerator.generate(strategy.toString(), getReportLabel(), 
+					ImmutableList.of("Ticker", "Strategy History", "Chart"), rowData));						
 		}
 	}
 	
+	private String getReportLabel() {
+		return "New scans found today";
+	}
+
 	private void notify(String subject, String content) throws Exception {
 		mailerService.send(subject, content);	
 	}

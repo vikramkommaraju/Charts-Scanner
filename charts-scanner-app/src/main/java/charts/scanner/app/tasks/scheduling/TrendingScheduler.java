@@ -1,22 +1,18 @@
 package charts.scanner.app.tasks.scheduling;
 
-import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-
 import charts.scanner.app.models.PriceActionRecord;
-import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.TrendingTodayResult;
+import charts.scanner.app.services.async.MailContentGenerator;
 import charts.scanner.app.services.async.MailerService;
 import charts.scanner.app.services.async.TrendingCalculator;
-import charts.scanner.app.services.async.TrendingMailContentGenerator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TrendingScheduler {
 	
 	@Autowired
-	private TrendingMailContentGenerator contentGenerator;
+	private MailContentGenerator contentGenerator;
 	
 	@Autowired
 	private MailerService mailerService;
@@ -67,7 +63,7 @@ public class TrendingScheduler {
 	
 	private void run(boolean isDaily) throws Exception {
 		CompletableFuture<TrendingTodayResult> result = runYield(isDaily);
-		String emailContent = composeEmailFromResult(result);
+		String emailContent = composeEmailFromResult(result, isDaily);
 		String subject = getSubject(isDaily);
 		sendNotification(subject, emailContent);
 	}
@@ -77,45 +73,42 @@ public class TrendingScheduler {
 		return subject;
 	}
 	
-	private String composeEmailFromResult(CompletableFuture<TrendingTodayResult> future) {
+	private String composeEmailFromResult(CompletableFuture<TrendingTodayResult> future, boolean isDaily) {
 		try {
 			TrendingTodayResult result = future.get();
-			String content = result.isFoundRecords() ? getContent(result) : null;
-			return content;
+			PriorityQueue<PriceActionRecord> queue = result.getQueue();
+			if(result.isFoundRecords()) {
+				return contentGenerator.generate(getReportTitle(isDaily), getReportLabel(isDaily), utils.getRowsFromQueue(queue));
+			} else {
+				return null;
+			}
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	private String getContent(TrendingTodayResult result) {
-		List<List<String>> rowData = getRowsFromQueue(result.getQueue(), result.isDaily());
-		if(rowData.size() > 0) {
-			return (contentGenerator.generate(result.isDaily() ? "Daily Leaderboard" : "Weekly Leaderboard", rowData));						
+	private String getReportLabel(boolean isDaily) {
+		if(isDaily) {
+			return "These scans have shown a daily yield of at least " + getDailyYeild();
 		} else {
-			return null;
+			return "These scans have shown a weekly yield of at least " + getWeeklyYield();
 		}
-		
 	}
 
-	private List<List<String>> getRowsFromQueue(PriorityQueue<PriceActionRecord> priorityQueue, boolean isDaily) {
-		List<List<String>> allRows = Lists.newArrayList();
-		while(!priorityQueue.isEmpty()) {
-			PriceActionRecord record = priorityQueue.poll();
-			List<String> reportRow = Lists.newArrayList();
-			String ticker = record.getTicker();
-			Double scanPrice = record.getScanPrice();
-			Double yield = record.getYield();
-			Map<String, List<ScanStrategy>> recordsToStrategiesMap = utils.getRecordsToStrategiesMap(utils.getPastDate(7), utils.getToday(true));
-			List<ScanStrategy> matchedStrategies = recordsToStrategiesMap.get(ticker);
-			reportRow.add(ticker);
-			reportRow.add(scanPrice+"");
-			reportRow.add(yield+"");
-			reportRow.add(matchedStrategies+"");
-			reportRow.add(utils.getLinkForTicker(record.getExchange(), record.getTicker()));
-			allRows.add(reportRow);
+	private double getWeeklyYield() {
+		return 5.0;
+	}
+
+	private double getDailyYeild() {
+		return 2.0;
+	}
+
+	private String getReportTitle(boolean isDaily) {
+		if(isDaily) {
+			return "Daily Leaderboard";
+		} else {
+			return "Weekly Leaderboard";
 		}
-		
-		return allRows;
 	}
 
 	private void sendNotification(String subject, String emailContent) throws Exception {
@@ -125,7 +118,7 @@ public class TrendingScheduler {
 	}
 
 	private CompletableFuture<TrendingTodayResult> runYield(boolean isDaily) {
-		CompletableFuture<TrendingTodayResult> result = calculator.calculate(isDaily);
+		CompletableFuture<TrendingTodayResult> result = calculator.calculate(isDaily, isDaily ? getDailyYeild() : getWeeklyYield());
 		CompletableFuture.allOf(result).join();
 		return result;
 	}
