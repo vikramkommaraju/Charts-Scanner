@@ -52,7 +52,7 @@ public class HelperUtils {
 	
 	public String getFriendlyDate(String date, String timestamp) {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SS MM-dd-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SS yyyy-MM-dd");
 			Date d = sdf.parse(timestamp+" "+date);
 			SimpleDateFormat sdfs = new SimpleDateFormat("MM/dd hh:mm a");
 			return sdfs.format(d);
@@ -223,7 +223,7 @@ public class HelperUtils {
 	
 	
 	public String getLinkForTicker(String exchange, String ticker) {
-		return "<a href=\"https://www.tradingview.com/chart/?symbol=" +getExchangeMapping(exchange)+":"+ticker+"\">View Chart</a>";
+		return "<a href=\"https://www.tradingview.com/chart/?symbol=" +getExchangeMapping(exchange)+":"+ticker+"\">Open</a>";
 	}
 	
 	public String italisize(String text) {
@@ -241,7 +241,6 @@ public class HelperUtils {
 		while(dayIndex > 0) {
 			String key = getPastDate(dayIndex); // To traverse the map in time order since simply iterating the map wont guarantee time sequence
 			if(dateToScansMap.containsKey(key)) {
-				strBuilder.append("\n");
 				List<ScannedRecord> scansMatched = dateToScansMap.get(key);
 				scansMatched.stream().forEach(rec -> {
 					String scanDate = key;
@@ -249,9 +248,8 @@ public class HelperUtils {
 					String timestamp = rec.getTimestamp();
 					String dateTime = getFriendlyDate(scanDate, timestamp);
 					String price = "$"+rec.getPrice();
-					strBuilder.append(dateTime +" : "+strategy+" : "+price);
+					strBuilder.append("["+strategy+" matched at " + dateTime +". Price was "+price+"]=========>>>>" + ", ");
 				});
-				strBuilder.append("\n");
 			}
 			
 			dayIndex--;
