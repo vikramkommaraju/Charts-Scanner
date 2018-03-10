@@ -35,7 +35,7 @@ system:
 stockCharts:
     loginUrl: https://stockcharts.com/scripts/php/dblogin.php
     username: venky.kv@gmail.com
-    password: YELLOW-WINDY-804
+    password: SUNDER-ARCH-120
 
 alphaVantage:
     apiKeys: KA87B0YR4EUJ8MKB, 1DTKOY2QKA7MQNN1, CHT571LJ253B157I, FM1IK4BJWD021W3V, 
