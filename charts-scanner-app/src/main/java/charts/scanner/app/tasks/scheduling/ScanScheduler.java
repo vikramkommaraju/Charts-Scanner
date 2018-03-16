@@ -166,8 +166,7 @@ public class ScanScheduler {
 				"<br/>12. RS Rating 80 or higher \n" + 
 				"<br/>13. Must breakout of a sound base \n" + 
 				"<br/>14. Volume on breakout must be at least 40%-50% above average\n" + 
-				"<br/>15. RS Rating 80 or higher \n" + 
-				"<br/>16. Must be within 5% of ideal buy point.\n" + 
+				"<br/>15. Must be within 5% of ideal buy point.\n" + 
 				"</div>";
 	}
 
