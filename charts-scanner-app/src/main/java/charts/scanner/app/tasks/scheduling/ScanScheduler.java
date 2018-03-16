@@ -141,35 +141,47 @@ public class ScanScheduler {
 			
 			
 			//Buying checklist
-			String checkList = getCheckList();
-			sendNotification(subject, chartLink+"<br/>"+ratingsInfo+"\n"+strategyHistory+"\n"+checkList);
+			String checkList = getCheckList(record);
+			sendNotification(subject, chartLink+"<br/>"+ratingsInfo+"<br/>"+checkList+"<br/>"+strategyHistory);
 		}
 
 	}
 
 	
 
-	private String getCheckList() {
+	private String getCheckList(IBDRecord record) {
 		return "<h2>Buying CheckList</h2>\n" + 
 				"<div>\n" + 
 				"<br/>1. Make sure market is in confirmed uptrend\n" + 
-				"<br/>2. Composite rating must be 95 or higher\n" + 
-				"<br/>3. EPS rating must be 80 or higher\n" + 
-				"<br/>4. EPS growth 25% or more in recent quarters\n" + 
-				"<br/>5. Annual EPS growth % must be 25% or higher\n" + 
-				"<br/>6. Sales growth % in recent quarter must be 25% or higher\n" + 
-				"<br/>7. Return on equity (ROE) must be 17% or higher\n" + 
-				"<br/>8. SMR (Sales+Margin+ROE) rating must be A or B\n" + 
-				"<br/>9. New products/services/management\n" + 
+				"<br/>2. Composite rating must be 95 or higher\n" + (Integer.parseInt(record.getCompositeRating()) >= 95 ? getTickMark() : getCrossMark()) +
+				"<br/>3. EPS rating must be 80 or higher\n" + (Integer.parseInt(record.getEpsRating()) >= 80 ? getTickMark() : getCrossMark()) +
+				"<br/>4. EPS growth 25% or more in recent quarters\n" + (Double.parseDouble(record.getEarningsLastQtr()) >= 25 ? getTickMark() : getCrossMark()) +
+				"<br/>5. Annual EPS growth % must be 25% or higher over 3 years\n" + (Double.parseDouble(record.getEarningGrowth3Yrs()) >= 25 ? getTickMark() : getCrossMark()) +
+				"<br/>6. Sales growth % in recent quarter must be 25% or higher\n" + (Double.parseDouble(record.getSalesGrowthLastQtr()) >= 25 ? getTickMark() : getCrossMark()) +
+				"<br/>7. Return on equity (ROE) must be 17% or higher\n" + (Double.parseDouble(record.getAnnualRoe()) >= 17 ? getTickMark() : getCrossMark()) +
+				"<br/>8. SMR (Sales+Margin+ROE) rating must be A or B\n" + ((record.getSmrRating().equals("A") || record.getSmrRating().equals("B")) ? getTickMark() : getCrossMark()) +
+				"<br/>9. New products/services/management\n" +
 				"<br/>10. Increase in the number of funds that own the stock\n" + 
-				"<br/>11. Accumilation/Distribution Rating of A/B/C\n" + 
-				"<br/>12. RS Rating 80 or higher \n" + 
+				"<br/>11. Accumilation/Distribution Rating of A/B/C\n" + ((record.getAccDisRating().equals("A") || record.getAccDisRating().equals("B") || record.getAccDisRating().equals("C")) ? getTickMark() : getCrossMark()) +
+				"<br/>12. RS Rating 80 or higher \n" + (Integer.parseInt(record.getRsRating()) >= 80 ? getTickMark() : getCrossMark()) +
 				"<br/>13. Must breakout of a sound base \n" + 
 				"<br/>14. Volume on breakout must be at least 40%-50% above average\n" + 
-				"<br/>15. Must be within 5% of ideal buy point.\n" + 
+				"<br/>15. Must be within 5% of ideal buy point.\n" + (Math.abs(Double.parseDouble(record.getPercentOffHigh())) <= 5 ? getTickMark() : getCrossMark()) +
 				"</div>";
 	}
 
+	private String isCompRatingHigher(String compositeRating) {
+		return Integer.parseInt(compositeRating) > 95 ? getTickMark() : getCrossMark();
+	}
+
+	private String getCrossMark() {
+		return "&nbsp;&#10060;";
+	}
+	
+	private String getTickMark() {
+		return "&nbsp;&#9989;";
+	}
+	
 	private List<List<String>> getCheckListRows(IBDRecord record) {
 		List<List<String>> allRows = Lists.newArrayList();
 		
