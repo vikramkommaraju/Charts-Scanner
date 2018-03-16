@@ -152,7 +152,7 @@ public class ScanScheduler {
 	private String getCheckList(IBDRecord record) {
 		return "<h2>Buying CheckList</h2>\n" + 
 				"<div>\n" + 
-				"<br/>1. Make sure market is in confirmed uptrend\n" + 
+				"<br/>1. Make sure market is in confirmed uptrend\n" + getMarketTrend() +
 				"<br/>2. Composite rating must be 95 or higher\n" + (Integer.parseInt(record.getCompositeRating()) >= 95 ? getTickMark() : getCrossMark()) +
 				"<br/>3. EPS rating must be 80 or higher\n" + (Integer.parseInt(record.getEpsRating()) >= 80 ? getTickMark() : getCrossMark()) +
 				"<br/>4. EPS growth 25% or more in recent quarters\n" + (Double.parseDouble(record.getEarningsLastQtr()) >= 25 ? getTickMark() : getCrossMark()) +
@@ -160,14 +160,26 @@ public class ScanScheduler {
 				"<br/>6. Sales growth % in recent quarter must be 25% or higher\n" + (Double.parseDouble(record.getSalesGrowthLastQtr()) >= 25 ? getTickMark() : getCrossMark()) +
 				"<br/>7. Return on equity (ROE) must be 17% or higher\n" + (Double.parseDouble(record.getAnnualRoe()) >= 17 ? getTickMark() : getCrossMark()) +
 				"<br/>8. SMR (Sales+Margin+ROE) rating must be A or B\n" + ((record.getSmrRating().equals("A") || record.getSmrRating().equals("B")) ? getTickMark() : getCrossMark()) +
-				"<br/>9. New products/services/management\n" +
+				"<br/>9. New products/services/management\n" + getStockTwitsLabel(record.getTicker()) +
 				"<br/>10. Increase in the number of funds that own the stock\n" + 
 				"<br/>11. Accumilation/Distribution Rating of A/B/C\n" + ((record.getAccDisRating().equals("A") || record.getAccDisRating().equals("B") || record.getAccDisRating().equals("C")) ? getTickMark() : getCrossMark()) +
 				"<br/>12. RS Rating 80 or higher \n" + (Integer.parseInt(record.getRsRating()) >= 80 ? getTickMark() : getCrossMark()) +
-				"<br/>13. Must breakout of a sound base \n" + 
-				"<br/>14. Volume on breakout must be at least 40%-50% above average\n" + 
+				"<br/>13. Must breakout of a sound base \n" + getMarketSmithConfirmText() +
+				"<br/>14. Volume on breakout must be at least 40%-50% above average\n" + getMarketSmithConfirmText() + 
 				"<br/>15. Must be within 5% of ideal buy point.\n" + (Math.abs(Double.parseDouble(record.getPercentOffHigh())) <= 5 ? getTickMark() : getCrossMark()) +
 				"</div>";
+	}
+
+	private String getMarketTrend() {
+		return "<a href=\"https://research.investors.com/markettrend.aspx\">See Market Trend on IBD! (Login Required)</a>";
+	}
+	
+	private String getStockTwitsLabel(String ticker) {
+		return "<a href=\"https://stocktwits.com/symbol/"+ticker+"\">Check StockTwits Sentiment!</a>";
+	}
+
+	private String getMarketSmithConfirmText() {
+		return "<font color=\"red\">CONFIRM ON MARKET SMITH!!</font>";
 	}
 
 	private String isCompRatingHigher(String compositeRating) {
