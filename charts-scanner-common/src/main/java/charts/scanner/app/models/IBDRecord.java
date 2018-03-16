@@ -37,6 +37,7 @@ public class IBDRecord {
 	String earnings1QtrAgo;
 	String earnings2QtrsAgo;
 	String earnings3QtrsAgo;
+	String earningGrowth3Yrs;
 	String pe;
 	
 	//Sales and profit

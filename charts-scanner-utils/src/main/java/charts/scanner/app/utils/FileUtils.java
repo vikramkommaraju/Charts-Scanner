@@ -49,13 +49,14 @@ public class FileUtils {
 					.earnings1QtrAgo(columns[10].replaceAll("^\"|\"$", ""))
 					.earnings2QtrsAgo(columns[11].replaceAll("^\"|\"$", ""))
 					.earnings3QtrsAgo(columns[12].replaceAll("^\"|\"$", ""))
-					.pe(columns[13].replaceAll("^\"|\"$", ""))
-					.salesGrowthLastQtr(columns[14].replaceAll("^\"|\"$", ""))
-					.salesGrowth3Yrs(columns[15].replaceAll("^\"|\"$", ""))
-					.annualRoe(columns[16].replaceAll("^\"|\"$", ""))
-					.percentOffHigh(columns[17].replaceAll("^\"|\"$", ""))
-					.fundsIncreasePercent(columns[18].replaceAll("^\"|\"$", ""))
-					.exchange(columns[19].replaceAll("^\"|\"$", ""))
+					.earningGrowth3Yrs(columns[13].replaceAll("^\"|\"$", ""))
+					.pe(columns[14].replaceAll("^\"|\"$", ""))
+					.salesGrowthLastQtr(columns[15].replaceAll("^\"|\"$", ""))
+					.salesGrowth3Yrs(columns[16].replaceAll("^\"|\"$", ""))
+					.annualRoe(columns[17].replaceAll("^\"|\"$", ""))
+					.percentOffHigh(columns[18].replaceAll("^\"|\"$", ""))
+					.fundsIncreasePercent(columns[19].replaceAll("^\"|\"$", ""))
+					.exchange(columns[20].replaceAll("^\"|\"$", ""))
 					.build());
 		}
 		return records;

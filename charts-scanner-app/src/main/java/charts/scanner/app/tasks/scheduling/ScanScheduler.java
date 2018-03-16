@@ -111,6 +111,11 @@ public class ScanScheduler {
 			String compositeRating = record.getCompositeRating();
 			String epsRating = record.getEpsRating();
 			String subject =  "["+utils.getToday(true)+"]" + record.getTicker() + " with IBD Ratings (" + compositeRating + ", " + epsRating + ") found!";
+			
+			//Chart Link
+			String chartLink = "Chart: " + utils.getLinkForTicker(record.getExchange(), record.getTicker());
+			
+			//Rating Info
 			List<List<String>> ratingsRows = getRowsFromIBDRecord(record);
 			String ratingsInfo = contentGenerator.generate("Matched today in : " + strategies.toString(), "Next earnings are on: " + record.getEpsDue(), 
 					ImmutableList.of("Ticker", 
@@ -119,25 +124,74 @@ public class ScanScheduler {
 							"RS Rating",
 							"SMR Rating",
 							"ACC/DS Rating",
-							"Earnings Growth (Latest Qtr to 3 Qtrs Ago)",
+							"EPS % Change (Latest Qtr to previous Qtrs)",
+							"EPS Growth for 3 Yrs",
 							"PE Ratio", 
 							"Sales % latest Qtr", 
 							"Sales growth last 3 years", 
 							"Annual ROE",
-							"Distance from Pivot",
+							"% from Pivot (-ve indicates already broken out!)",
 							"Funds % Increase"), ratingsRows);
 			
+			//Strategy History
 			Map<String, List<ScannedRecord>> dateToScansMap = utils.getRecordHistoryByDate(record.getTicker(), utils.getPastDate(10), utils.getToday(true));
 			List<List<String>> strategiesRows = getRowsFromStrategyHistory(dateToScansMap);
 			String strategyHistory = contentGenerator.generate("Strategy History", "The following strategies have been matched in the past week", 
 					ImmutableList.of("Date", "Strategies Matched", "Price on the day"), strategiesRows);
-			String chartLink = "Chart: " + utils.getLinkForTicker(record.getExchange(), record.getTicker());
-			sendNotification(subject, ratingsInfo+"\n"+strategyHistory+"\n"+chartLink);
+			
+			
+			//Buying checklist
+			String checkList = getCheckList();
+			sendNotification(subject, chartLink+"<br/>"+ratingsInfo+"\n"+strategyHistory+"\n"+checkList);
 		}
 
 	}
 
 	
+
+	private String getCheckList() {
+		return "<h2>Buying CheckList</h2>\n" + 
+				"<div>\n" + 
+				"<br/>1. Make sure market is in confirmed uptrend\n" + 
+				"<br/>2. Composite rating must be 95 or higher\n" + 
+				"<br/>3. EPS rating must be 80 or higher\n" + 
+				"<br/>4. EPS growth 25% or more in recent quarters\n" + 
+				"<br/>5. Annual EPS growth % must be 25% or higher\n" + 
+				"<br/>6. Sales growth % in recent quarter must be 25% or higher\n" + 
+				"<br/>7. Return on equity (ROE) must be 17% or higher\n" + 
+				"<br/>8. SMR (Sales+Margin+ROE) rating must be A or B\n" + 
+				"<br/>9. New products/services/management\n" + 
+				"<br/>10. Increase in the number of funds that own the stock\n" + 
+				"<br/>11. Accumilation/Distribution Rating of A/B/C\n" + 
+				"<br/>12. RS Rating 80 or higher \n" + 
+				"<br/>13. Must breakout of a sound base \n" + 
+				"<br/>14. Volume on breakout must be at least 40%-50% above average\n" + 
+				"<br/>15. RS Rating 80 or higher \n" + 
+				"<br/>16. Must be within 5% of ideal buy point.\n" + 
+				"</div>";
+	}
+
+	private List<List<String>> getCheckListRows(IBDRecord record) {
+		List<List<String>> allRows = Lists.newArrayList();
+		
+		List<String> trend = Lists.newArrayList();
+		trend.add("Market must be in confirmed uptrend");
+		trend.add("Pass"); //TBD Fetch Dynamically
+		allRows.add(trend);
+
+		List<String> compRating = Lists.newArrayList();
+		trend.add("Is Composite Rating Greater Than 95?");
+		trend.add(Integer.parseInt(record.getCompositeRating()) > 95 ? "Pass" : "Fail");
+		allRows.add(compRating);
+		
+		List<String> epsRating = Lists.newArrayList();
+		trend.add("Is EPS Rating Greater Than 80?");
+		trend.add(Integer.parseInt(record.getCompositeRating()) > 80 ? "Pass" : "Fail");
+		allRows.add(epsRating);
+		
+		
+		return allRows;		
+	}
 
 	private Map<IBDRecord, List<ScanStrategy>> getMapping(List<Pair<IBDRecord, ScanStrategy>> ibdScans) {
 		Map<IBDRecord, List<ScanStrategy>> map = Maps.newHashMap();
@@ -247,6 +301,7 @@ public class ScanScheduler {
 		reportRow.add(record.getSmrRating());
 		reportRow.add(record.getAccDisRating());
 		reportRow.add(record.getEarningsLastQtr()+","+record.getEarnings1QtrAgo()+","+record.getEarnings2QtrsAgo()+","+record.getEarnings3QtrsAgo());
+		reportRow.add(record.getEarningGrowth3Yrs());
 		reportRow.add(record.getPe());
 		reportRow.add(record.getSalesGrowthLastQtr());
 		reportRow.add(record.getSalesGrowth3Yrs());
