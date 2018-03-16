@@ -1,4 +1,4 @@
-package charts.scanner.app.services.async;
+package charts.scanner.app.services;
 
 import java.io.File;
 import java.util.List;
@@ -50,7 +50,7 @@ public class WebScraperService {
 	private StockChartsConfig config;
 	
 	private WebDriver driver;
-	private boolean usePhantom = true;
+	private boolean usePhantom = false;
 	
 	@PostConstruct
 	private void login() {

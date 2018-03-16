@@ -1,4 +1,4 @@
-package charts.scanner.app.services.async;
+package charts.scanner.app.services;
 
 import java.util.List;
 import java.util.Map;

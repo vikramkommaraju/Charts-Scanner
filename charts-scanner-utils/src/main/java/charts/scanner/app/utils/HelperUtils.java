@@ -24,11 +24,13 @@ import com.hp.gagawa.java.elements.A;
 
 import charts.scanner.app.components.TickerQuote;
 import charts.scanner.app.components.TickerQuoteResponse;
+import charts.scanner.app.models.IBDRecord;
 import charts.scanner.app.models.MatchingScansRecord;
 import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StrategyHisoryRecord;
+import charts.scanner.app.models.repositories.IBDRecordsRepository;
 import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,8 +45,14 @@ import lombok.extern.slf4j.Slf4j;
 public class HelperUtils {
 
 	@Autowired
-	private ScannedRecordsRepository repository;
-	private Map<String, String> exchangeMapping = ImmutableMap.of("NASD", "NASDAQ", "NYSE", "NYSE");
+	private ScannedRecordsRepository scansRepo;
+	
+	@Autowired
+	private IBDRecordsRepository ibdRepo;
+	
+	
+	private Map<String, String> exchangeMapping = ImmutableMap.of("NASD", "NASDAQ", 
+			"NASDAQ", "NASDAQ", "NYSE", "NYSE");
 
 	public String getToday(boolean isDateOnly) {
 		return formatDate(getDate(), isDateOnly);
@@ -80,7 +88,7 @@ public class HelperUtils {
 	}
 	
 	public Map<String, List<ScanStrategy>> getRecordsToStrategiesMap(String startDate, String endDate) {
-		List<ScannedRecord> scannedRecords = repository.findAllRecordsByDateRange(startDate, endDate);
+		List<ScannedRecord> scannedRecords = scansRepo.findAllRecordsByDateRange(startDate, endDate);
 		Map<String, List<ScanStrategy>> matchedRecords = Maps.newConcurrentMap();
 		for(ScannedRecord record : scannedRecords) {
 			
@@ -96,7 +104,7 @@ public class HelperUtils {
 	
 	public Map<String, List<ScannedRecord>> getRecordHistoryByDate(String ticker, String startDate, String endDate) {
 		Map<String, List<ScannedRecord>> dateToScansMap = Maps.newHashMap();
-		List<ScannedRecord> records = repository.findAllRecordsByTickerAndDateRange(ticker, startDate, endDate);
+		List<ScannedRecord> records = scansRepo.findAllRecordsByTickerAndDateRange(ticker, startDate, endDate);
 		for(ScannedRecord record : records) {
 			
 			if(!dateToScansMap.containsKey(record.getDateScanned())) {
@@ -112,7 +120,7 @@ public class HelperUtils {
 	}
 	
 	public boolean isExistingRecordForStrategy(String ticker, ScanStrategy strategy) {
-		ScannedRecord exisingRecord = repository.findRecordByDateAndTickerAndStrategy(getToday(true), ticker, strategy);
+		ScannedRecord exisingRecord = scansRepo.findRecordByDateAndTickerAndStrategy(getToday(true), ticker, strategy);
 		return exisingRecord != null;
 	}
 
@@ -198,22 +206,22 @@ public class HelperUtils {
 	}
 
 	public List<ScannedRecord> getRecordsForStrategySinceLastWeek(ScanStrategy strategy) {
-		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getPastDate(7), getToday(true), strategy);
+		List<ScannedRecord> records = scansRepo.findAllRecordsByStrategy(getPastDate(7), getToday(true), strategy);
 		return records;
 	}
 	
 	public List<ScannedRecord> getRecordsForStrategyForToday(ScanStrategy strategy) {
-		List<ScannedRecord> records = repository.findAllRecordsByStrategy(getToday(true), getToday(true), strategy);
+		List<ScannedRecord> records = scansRepo.findAllRecordsByStrategy(getToday(true), getToday(true), strategy);
 		return records;
 	}
 	
 	public List<ScannedRecord> getRecordsForToday() {
-		List<ScannedRecord> records = repository.findAllRecordsByDate(getToday(true));
+		List<ScannedRecord> records = scansRepo.findAllRecordsByDate(getToday(true));
 		return records;
 	}
 	
 	public List<ScannedRecord> getRecordsForTheWeek() {
-		List<ScannedRecord> records = repository.findAllRecordsByDateRange(getPastDate(7), getToday(true));
+		List<ScannedRecord> records = scansRepo.findAllRecordsByDateRange(getPastDate(7), getToday(true));
 		return records;
 	}
 	
@@ -223,7 +231,7 @@ public class HelperUtils {
 	
 	
 	public String getLinkForTicker(String exchange, String ticker) {
-		return "<a href=\"https://www.tradingview.com/chart/?symbol=" +getExchangeMapping(exchange)+":"+ticker+"\">Open</a>";
+		return "<a href=\"https://www.tradingview.com/chart/?symbol="+getExchangeMapping(exchange)+":"+ticker+"\">Open</a>";
 	}
 	
 	public String italisize(String text) {
@@ -289,5 +297,13 @@ public class HelperUtils {
 	
 	public String getTrendingReportLabel(boolean isDaily) {
 		return "These stocks have been trending " + (isDaily ? "Today!" : "This Week!");
+	}
+	
+	public boolean isIBDStock(String ticker) {
+		return ibdRepo.findRecordByTicker(ticker) != null;
+	}
+	
+	public IBDRecord getIBDRecord(String ticker) {
+		return ibdRepo.findRecordByTicker(ticker);
 	}
 }

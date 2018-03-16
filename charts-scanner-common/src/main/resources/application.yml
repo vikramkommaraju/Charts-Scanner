@@ -26,6 +26,13 @@ spring.mail.password: moneymaker365
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
 
+pop3:
+  host: pop.gmail.com
+  store: pop3
+  serverStore: pop3s
+  port: 995
+  tls: true
+
 system:
   sleep:
     short: 1000

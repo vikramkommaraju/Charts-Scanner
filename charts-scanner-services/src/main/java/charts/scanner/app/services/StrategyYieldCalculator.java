@@ -1,4 +1,4 @@
-package charts.scanner.app.services.async;
+package charts.scanner.app.services;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -17,21 +17,18 @@ import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StrategyYieldResult;
 import charts.scanner.app.models.StrategyYieldResult.StrategyYieldResultBuilder;
-import charts.scanner.app.models.TrendingTodayResult;
-import charts.scanner.app.models.TrendingTodayResult.TrendingTodayResultBuilder;
-import charts.scanner.app.models.repositories.ScannedRecordsRepository;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Responsible for calculating scans trendin today. Invoked by TrendingTodayScheduler
+ * Responsible for calculating the yield for a given strategy. Invoked by Strategy YeildScheduler
  * 
  * @author vkommaraju
  *
  */
 @Service
 @Slf4j
-public class TrendingCalculator {
+public class StrategyYieldCalculator {
 
 	@Autowired
 	private HelperUtils utils;
@@ -39,22 +36,23 @@ public class TrendingCalculator {
 	@Autowired
 	private PriceLookupService priceService;
 	
-	private final String apiKey = "CHT571LJ253B157I";
+	private final String apiKey = "1DTKOY2QKA7MQNN1";
 	
 	@Async
-	public CompletableFuture<TrendingTodayResult> calculate(boolean daily, double minYield) {
+	public CompletableFuture<StrategyYieldResult> calculate(ScanStrategy strategy, boolean isDaily, double minYield) {
 		
-		TrendingTodayResultBuilder resultBuilder = TrendingTodayResult.builder().isDaily(daily);
+		StrategyYieldResultBuilder resultBuilder = StrategyYieldResult.builder().strategy(strategy);
 		
 		try {
-			List<ScannedRecord> records = daily ? utils.getRecordsForToday() : utils.getRecordsForTheWeek();
+			List<ScannedRecord> records = isDaily ? utils.getRecordsForStrategyForToday(strategy) : 
+												utils.getRecordsForStrategySinceLastWeek(strategy);
 			if(records != null && records.size() > 0) {
 				TickerQuoteResponse response = getPricesForRecords(records);
 				PriorityQueue<PriceActionRecord> queue = utils.getPriorityQueueWithYield(records, response, minYield);
 				resultBuilder.queue(queue).foundRecords(records != null && records.size() > 0);				
 			}
 		} catch (Exception e) {
-			log.info("Failed to calculate trending today. Reason " + e.getMessage());
+			log.info("Failed to calculate yield for : " + strategy);
 			e.printStackTrace();
 		}
 		

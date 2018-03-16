@@ -1,4 +1,4 @@
-package charts.scanner.app.services.async;
+package charts.scanner.app.services;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import charts.scanner.app.configuration.MailServerConfig;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,12 +22,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class MailerService {
+public class MailSenderService {
   
     @Autowired
     private JavaMailSender mailSender;
     
-    private boolean isDev = true;
+    @Autowired
+    private MailServerConfig config;
+    
+    private boolean isDev = false;
     
     public void send(String subject, String content) throws Exception {
     		MimeMessage message = newMessage(getSendTo(), subject, content);
@@ -40,7 +44,9 @@ public class MailerService {
 			return new InternetAddress[] {
 								new InternetAddress("vikthered@gmail.com"),
 								new InternetAddress("sunilmvn@gmail.com"),
-								new InternetAddress("venky.kv@gmail.com")
+								new InternetAddress("venky.kv@gmail.com"),
+								new InternetAddress("vamshi1987@gmail.com"),
+								
 					};
 		}
 	}

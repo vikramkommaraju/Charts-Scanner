@@ -19,9 +19,9 @@ import charts.scanner.app.models.ScanStrategy;
 import charts.scanner.app.models.ScannedRecord;
 import charts.scanner.app.models.StrategyYieldResult;
 import charts.scanner.app.models.TrendingTodayResult;
-import charts.scanner.app.services.async.MailContentGenerator;
-import charts.scanner.app.services.async.MailerService;
-import charts.scanner.app.services.async.StrategyYieldCalculator;
+import charts.scanner.app.services.MailContentGenerator;
+import charts.scanner.app.services.MailSenderService;
+import charts.scanner.app.services.StrategyYieldCalculator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,7 @@ public class StrategyScheduler {
 	private MailContentGenerator contentGenerator;
 	
 	@Autowired
-	private MailerService mailerService;
+	private MailSenderService mailerService;
 	
 	@Autowired
 	private StrategyYieldCalculator calculator;
@@ -46,7 +46,7 @@ public class StrategyScheduler {
 	private HelperUtils utils;
 	
 	
-	@Scheduled(fixedRate = 2*60*60*1000)
+	//@Scheduled(fixedRate = 2*60*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		log.info("Yield Scheduler started at : " + utils.getDate());

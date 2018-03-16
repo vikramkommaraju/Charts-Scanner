@@ -3,16 +3,15 @@ package charts.scanner.app.tasks.scheduling;
 import java.util.PriorityQueue;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import charts.scanner.app.models.PriceActionRecord;
 import charts.scanner.app.models.TrendingTodayResult;
-import charts.scanner.app.services.async.MailContentGenerator;
-import charts.scanner.app.services.async.MailerService;
-import charts.scanner.app.services.async.TrendingCalculator;
+import charts.scanner.app.services.MailContentGenerator;
+import charts.scanner.app.services.MailSenderService;
+import charts.scanner.app.services.TrendingCalculator;
 import charts.scanner.app.utils.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +27,7 @@ public class TrendingScheduler {
 	private MailContentGenerator contentGenerator;
 	
 	@Autowired
-	private MailerService mailerService;
+	private MailSenderService mailerService;
 	
 	@Autowired
 	private TrendingCalculator calculator;
@@ -37,7 +36,7 @@ public class TrendingScheduler {
 	private HelperUtils utils;
 	
 	
-	@Scheduled(fixedRate = 60*60*1000)
+	//@Scheduled(fixedRate = 60*60*1000)
 	//@Scheduled(cron="0 0/30 7-15 * * ?") //Every 30 mins from 7AM-3PM
     public void schedule() throws InterruptedException {
 		
@@ -45,7 +44,7 @@ public class TrendingScheduler {
 		
 		try {
 			runDailyTrending();
-			runWeeklyTrending();
+			//runWeeklyTrending();
 		} catch (Exception e) {
 			log.error("Failed to run trending jobs. Reason: " + e.getMessage());
 		}
@@ -65,7 +64,7 @@ public class TrendingScheduler {
 		CompletableFuture<TrendingTodayResult> result = runYield(isDaily);
 		String emailContent = composeEmailFromResult(result, isDaily);
 		String subject = getSubject(isDaily);
-		sendNotification(subject, emailContent);
+		sendNotification(subject, emailContent);	
 	}
 
 	private String getSubject(boolean isDaily) {
