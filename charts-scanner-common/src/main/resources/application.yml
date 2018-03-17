@@ -6,8 +6,8 @@
 #Mysql local dev. Need to create a user and db schema first. See https://dzone.com/articles/docker-for-mac-mysql-setup
 spring.jpa.hibernate.ddl-auto: update
 spring.datasource.url: jdbc:mysql://localhost:3306/scanner?autoReconnect=true&useSSL=false
-spring.datasource.username: admin
-spring.datasource.password: password
+spring.datasource.username: changeme
+spring.datasource.password: changeme
 
 #Postgres on Heroku
 #spring.jpa.hibernate.ddl-auto: update
@@ -22,7 +22,7 @@ spring.datasource.password: password
 spring.mail.host: smtp.gmail.com
 spring.mail.port: 587
 spring.mail.username: myscannerapp365@gmail.com
-spring.mail.password: moneymaker365
+spring.mail.password: changeme
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
 
@@ -41,8 +41,8 @@ system:
 
 stockCharts:
     loginUrl: https://stockcharts.com/scripts/php/dblogin.php
-    username: venky.kv@gmail.com
-    password: SUNDER-ARCH-120
+    username: changeme
+    password: changeme
 
 alphaVantage:
     apiKeys: KA87B0YR4EUJ8MKB, 1DTKOY2QKA7MQNN1, CHT571LJ253B157I, FM1IK4BJWD021W3V, 
